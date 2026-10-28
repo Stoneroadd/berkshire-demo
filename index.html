@@ -802,6 +802,35 @@
       }
       .quote-author strong { color: var(--text); font-weight: 700; }
 
+      /* -- Official site section -- */
+      .official-section { background: var(--bg); }
+      .official-hero { position:relative;overflow:hidden;background:#0a0b0f;border:1px solid var(--line); }
+      .official-hero-inner { padding:clamp(44px,6vw,80px) clamp(22px,6vw,100px);display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center; }
+      @media(max-width:700px){.official-hero-inner{grid-template-columns:1fr;}}
+      .official-hero-badge { font-size:9px;letter-spacing:0.28em;color:var(--text-faint);border:1px solid var(--line-strong);display:inline-flex;align-items:center;gap:8px;padding:6px 12px;margin-bottom:22px; }
+      .official-hero-badge::before { content:"";width:5px;height:5px;border-radius:50%;background:var(--accent);animation:blink 2s step-start infinite; }
+      @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
+      .official-hero h2{margin-bottom:14px;}
+      .official-hero-text{font-family:"DM Sans",sans-serif;font-size:14px;line-height:1.7;color:var(--text-dim);margin:0 0 26px;max-width:440px;}
+      .official-links { display:flex;flex-direction:column;gap:1px;background:var(--line); }
+      .official-link-row { background:var(--bg-card);padding:18px 22px;display:flex;align-items:center;justify-content:space-between;text-decoration:none;color:var(--text);transition:background var(--t-fast) var(--ease-out),padding-left var(--t-fast) var(--ease-out);gap:14px; }
+      .official-link-row:hover{background:#14171e;padding-left:30px;}
+      .row-left{display:flex;flex-direction:column;gap:4px;}
+      .row-tag{font-size:8px;letter-spacing:0.22em;color:var(--text-faint);font-weight:700;}
+      .row-title{font-size:14px;font-weight:600;letter-spacing:-0.01em;}
+      .row-year{font-size:11px;color:var(--text-faint);font-family:"DM Sans",sans-serif;}
+      .row-arrow{font-size:14px;color:var(--text-faint);transition:color var(--t-fast),transform var(--t-fast) var(--ease-out);flex-shrink:0;}
+      .official-link-row:hover .row-arrow{color:var(--accent);transform:translate(3px,-3px);}
+      .subs-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:44px;}
+      @media(max-width:900px){.subs-grid{grid-template-columns:repeat(3,1fr);}}
+      @media(max-width:500px){.subs-grid{grid-template-columns:repeat(2,1fr);}}
+      .sub-cell{background:var(--bg);padding:24px 18px;transition:background var(--t-fast) var(--ease-out);cursor:default;position:relative;overflow:hidden;}
+      .sub-cell::after{content:"";position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--accent);transition:width var(--t-med) var(--ease);}
+      .sub-cell:hover{background:var(--bg-card);}
+      .sub-cell:hover::after{width:100%;}
+      .sub-name{font-size:13px;font-weight:700;margin-bottom:5px;letter-spacing:-0.01em;}
+      .sub-sector{font-size:9px;letter-spacing:0.18em;color:var(--text-faint);}
+
       /* â”€â”€ Footer â”€â”€ */
       .footer {
         padding: clamp(50px, 8vw, 90px) clamp(22px, 6vw, 100px) 30px;
@@ -992,6 +1021,7 @@
         <li><a href="#portfolio">Portfolio</a></li>
         <li><a href="#timeline">Heritage</a></li>
         <li><a href="#quote">Philosophy</a></li>
+        <li><a href="#official">Official</a></li>
       </ul>
       <!-- dot + scene label (replicates the video's "â€¢ A LONG-TERM PERSPECTIVE") -->
       <div class="nav-scene-label" aria-live="polite">
@@ -1140,6 +1170,61 @@
     </section>
 
     <!-- â”€â”€ Footer â”€â”€ -->
+
+    <!-- Official site simulation -->
+    <section class="section official-section" id="official">
+      <div class="section-label reveal">BERKSHIRE HATHAWAY OFFICIAL</div>
+      <div class="official-hero reveal">
+        <div class="official-hero-inner">
+          <div>
+            <div class="official-hero-badge">OFFICIAL RESOURCES</div>
+            <h2>The real<br><span class="alt">Berkshire.</span></h2>
+            <p class="official-hero-text">Everything published directly by the company - annual reports, shareholder letters, proxy statements, and filings going back decades.</p>
+          </div>
+          <div class="official-links">
+            <a class="official-link-row" href="https://www.berkshirehathaway.com/reports.html" target="_blank" rel="noopener">
+              <div class="row-left"><span class="row-tag">ANNUAL REPORT</span><span class="row-title">2023 Annual Report</span><span class="row-year">Form 10-K - Feb 2024</span></div>
+              <span class="row-arrow">+</span>
+            </a>
+            <a class="official-link-row" href="https://www.berkshirehathaway.com/letters/letters.html" target="_blank" rel="noopener">
+              <div class="row-left"><span class="row-tag">SHAREHOLDER LETTERS</span><span class="row-title">Letters 1977 - 2023</span><span class="row-year">Warren Buffett - Annual</span></div>
+              <span class="row-arrow">+</span>
+            </a>
+            <a class="official-link-row" href="https://www.berkshirehathaway.com/ownersman.pdf" target="_blank" rel="noopener">
+              <div class="row-left"><span class="row-tag">GOVERNANCE</span><span class="row-title">Owner's Manual</span><span class="row-year">Principles for Shareholders</span></div>
+              <span class="row-arrow">+</span>
+            </a>
+            <a class="official-link-row" href="https://www.berkshirehathaway.com/subs/sublinks.html" target="_blank" rel="noopener">
+              <div class="row-left"><span class="row-tag">SUBSIDIARIES</span><span class="row-title">All subsidiary companies</span><span class="row-year">Full directory</span></div>
+              <span class="row-arrow">+</span>
+            </a>
+            <a class="official-link-row" href="https://www.berkshirehathaway.com/" target="_blank" rel="noopener">
+              <div class="row-left"><span class="row-tag">WEBSITE</span><span class="row-title">berkshirehathaway.com</span><span class="row-year">Official corporate site</span></div>
+              <span class="row-arrow">+</span>
+            </a>
+          </div>
+        </div>
+      </div>
+      <p class="body-text reveal" style="margin-top:52px;margin-bottom:26px;">A selection of the operating businesses wholly or partially owned by Berkshire Hathaway Inc.</p>
+      <div class="subs-grid reveal">
+        <div class="sub-cell"><div class="sub-name">GEICO</div><div class="sub-sector">INSURANCE</div></div>
+        <div class="sub-cell"><div class="sub-name">BNSF Railway</div><div class="sub-sector">TRANSPORTATION</div></div>
+        <div class="sub-cell"><div class="sub-name">BH Energy</div><div class="sub-sector">UTILITIES</div></div>
+        <div class="sub-cell"><div class="sub-name">General Re</div><div class="sub-sector">REINSURANCE</div></div>
+        <div class="sub-cell"><div class="sub-name">BH Reinsurance</div><div class="sub-sector">REINSURANCE</div></div>
+        <div class="sub-cell"><div class="sub-name">See's Candies</div><div class="sub-sector">CONSUMER</div></div>
+        <div class="sub-cell"><div class="sub-name">Dairy Queen</div><div class="sub-sector">FOOD SERVICE</div></div>
+        <div class="sub-cell"><div class="sub-name">Nebraska Furniture</div><div class="sub-sector">RETAIL</div></div>
+        <div class="sub-cell"><div class="sub-name">Marmon Group</div><div class="sub-sector">INDUSTRIAL</div></div>
+        <div class="sub-cell"><div class="sub-name">McLane Company</div><div class="sub-sector">DISTRIBUTION</div></div>
+        <div class="sub-cell"><div class="sub-name">Precision Castparts</div><div class="sub-sector">AEROSPACE</div></div>
+        <div class="sub-cell"><div class="sub-name">Lubrizol</div><div class="sub-sector">SPECIALTY CHEM.</div></div>
+        <div class="sub-cell"><div class="sub-name">Shaw Industries</div><div class="sub-sector">FLOORING</div></div>
+        <div class="sub-cell"><div class="sub-name">Clayton Homes</div><div class="sub-sector">HOUSING</div></div>
+        <div class="sub-cell"><div class="sub-name">Brooks Running</div><div class="sub-sector">FOOTWEAR</div></div>
+      </div>
+    </section>
+
     <footer class="footer">
       <div class="footer-top">
         <div class="footer-brand">BERKSHIRE<br />HATHAWAY<span>EST. 1839</span></div>
