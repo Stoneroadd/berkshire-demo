@@ -1,11 +1,11 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
     <meta name="theme-color" content="#050608" />
-    <meta name="description" content="Berkshire Hathaway — Noir Concept. A legacy of disciplined investing, enduring businesses, and decisions made for the long term." />
-    <title>Berkshire Hathaway — Noir Concept</title>
+    <meta name="description" content="Berkshire Hathaway â€” Noir Concept. A legacy of disciplined investing, enduring businesses, and decisions made for the long term." />
+    <title>Berkshire Hathaway â€” Noir Concept</title>
     <style>
       @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap");
 
@@ -41,10 +41,10 @@
         overflow-x: hidden;
       }
 
-      /* ── GPU acceleration layer ── */
+      /* â”€â”€ GPU acceleration layer â”€â”€ */
       .gpu { will-change: transform, opacity; transform: translateZ(0); backface-visibility: hidden; }
 
-      /* ── Grain overlay (fixed, whole page) ── */
+      /* â”€â”€ Grain overlay (fixed, whole page) â”€â”€ */
       .grain-fixed {
         position: fixed;
         inset: 0;
@@ -55,7 +55,7 @@
         mix-blend-mode: overlay;
       }
 
-      /* ── Scroll progress bar ── */
+      /* â”€â”€ Scroll progress bar â”€â”€ */
       .scroll-progress {
         position: fixed;
         top: 0;
@@ -69,7 +69,7 @@
         will-change: transform;
       }
 
-      /* ── Reveal system ── */
+      /* â”€â”€ Reveal system â”€â”€ */
       .reveal {
         opacity: 0;
         transform: translateY(50px);
@@ -80,7 +80,7 @@
       }
       .reveal.in { opacity: 1; transform: translateZ(0); }
 
-      /* clip-path reveal — wipes in from bottom */
+      /* clip-path reveal â€” wipes in from bottom */
       .reveal-clip {
         clip-path: inset(100% 0 0 0);
         transition: clip-path var(--t-slow) var(--ease);
@@ -101,7 +101,7 @@
       }
       .word-reveal.in span { transform: translateY(0); }
 
-      /* ── Section label ── */
+      /* â”€â”€ Section label â”€â”€ */
       .section-label {
         font-size: 10px;
         font-weight: 700;
@@ -139,7 +139,7 @@
         max-width: 520px;
       }
 
-      /* ── Navbar ── */
+      /* â”€â”€ Navbar â”€â”€ */
       .navbar {
         position: fixed;
         top: 0;
@@ -241,7 +241,30 @@
       }
       .hero:not(.motion-enabled) .dot { background: var(--text-faint); }
 
-      /* ── Hero ── */
+      /* â”€â”€ Page loader (circle) â”€â”€ */
+      .page-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 2000;
+        background: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 600ms var(--ease), visibility 600ms;
+      }
+      .page-loader.gone { opacity: 0; visibility: hidden; }
+      .loader-ring {
+        width: 36px;
+        height: 36px;
+        border: 1.5px solid rgba(255,255,255,0.12);
+        border-top-color: rgba(255,255,255,0.7);
+        border-radius: 50%;
+        animation: spin 700ms linear infinite;
+        will-change: transform;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+
+      /* â”€â”€ Hero â”€â”€ */
       .hero {
         min-height: 100svh;
         position: relative;
@@ -250,34 +273,47 @@
         background: var(--bg);
       }
 
-      /* Crossfade shots with Ken Burns zoom */
+      /*
+       * SLIDE-WIPE system: each shot sits at translateX(100%)
+       * and the active one is at translateX(0).
+       * Transition slides the incoming shot FROM right â†’ 0
+       * while outgoing goes FROM 0 â†’ -100% (clipped by overflow:hidden).
+       * Ken Burns runs independently on the image scale.
+       */
+      .shots-track {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+      }
       .shot {
         position: absolute;
         inset: 0;
         background-size: cover;
         background-position: center;
-        opacity: 0;
-        transform: scale(1.12) translateZ(0);
-        transition:
-          opacity 800ms var(--ease),
-          transform 0s linear;
-        will-change: opacity, transform;
+        transform: translateX(100%) translateZ(0);
+        will-change: transform;
         backface-visibility: hidden;
       }
-      .shot.is-active {
-        opacity: 1;
-        transform: scale(1.0) translateZ(0);
-        transition:
-          opacity 800ms var(--ease),
-          transform 4000ms var(--ease-in-out);
+      /* The inner scale element for Ken Burns without moving the clip */
+      .shot-inner {
+        position: absolute;
+        inset: -8%;
+        background-size: cover;
+        background-position: center;
+        transform: scale(1.08) translateZ(0);
+        will-change: transform;
+        transition: transform 5000ms linear;
       }
-      .shot.one {
+      .shot.is-active .shot-inner {
+        transform: scale(1.0) translateZ(0);
+      }
+      .shot.one .shot-inner {
         background-image: url("https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1920&q=90");
       }
-      .shot.two {
+      .shot.two .shot-inner {
         background-image: url("https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1920&q=90");
       }
-      .shot.three {
+      .shot.three .shot-inner {
         background-image: url("https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1920&q=90");
       }
 
@@ -300,13 +336,28 @@
           linear-gradient(0deg, var(--bg) 4%, transparent 50%, rgba(0,0,0,0.42));
         pointer-events: none;
       }
-      .hero .frame {
-        position: absolute;
-        inset: 14px;
-        z-index: 3;
-        border: 1px solid var(--line);
-        pointer-events: none;
+
+      /* Slide-counter dots (two tiny squares like in the video) */
+      .slide-dots {
+        display: flex;
+        gap: 5px;
+        margin-top: 28px;
       }
+      .slide-dot {
+        width: 8px;
+        height: 8px;
+        border: 1px solid rgba(255,255,255,0.4);
+        background: transparent;
+        transition: background var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out);
+        cursor: pointer;
+        padding: 0;
+        appearance: none;
+      }
+      .slide-dot.active {
+        background: rgba(255,255,255,0.85);
+        border-color: transparent;
+      }
+
       .shell {
         position: relative;
         z-index: 4;
@@ -340,7 +391,7 @@
       }
       @keyframes lineGrow { to { width: 36px; } }
 
-      /* Hero title — word-by-word slide up */
+      /* Hero title â€” word-by-word slide up */
       h1 {
         font-size: clamp(52px, 10vw, 96px);
         line-height: 0.89;
@@ -449,7 +500,52 @@
         50% { opacity: 1; transform: scaleY(1); }
       }
 
-      /* ── Section wrappers ── */
+      /* Nav label pill (dot + text, replaces PAUSE MOTION button) */
+      .nav-scene-label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 10px;
+        letter-spacing: 0.16em;
+        color: var(--text-dim);
+        font-weight: 600;
+      }
+      .nav-scene-label .dot {
+        width: 7px;
+        height: 7px;
+        background: white;
+        border-radius: 50%;
+        flex-shrink: 0;
+        transition: background var(--t-fast);
+      }
+      .nav-scene-text {
+        overflow: hidden;
+        position: relative;
+        height: 1.2em;
+      }
+      /* Clip: outgoing slides up, incoming slides in from below */
+      .nav-scene-text span {
+        display: block;
+        line-height: 1.2em;
+        position: absolute;
+        white-space: nowrap;
+        transition: transform 400ms var(--ease), opacity 400ms var(--ease);
+        will-change: transform, opacity;
+      }
+      .nav-scene-text span.out {
+        transform: translateY(-110%);
+        opacity: 0;
+      }
+      .nav-scene-text span.in {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      .nav-scene-text span.next {
+        transform: translateY(110%);
+        opacity: 0;
+      }
+
+      /* â”€â”€ Section wrappers â”€â”€ */
       .section {
         position: relative;
         padding: clamp(70px, 12vw, 140px) clamp(22px, 6vw, 100px);
@@ -457,7 +553,7 @@
       }
       .section.dark { background: var(--bg-soft); }
 
-      /* ── Principles — staggered clip-path cards ── */
+      /* â”€â”€ Principles â€” staggered clip-path cards â”€â”€ */
       .principles-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -515,7 +611,7 @@
       }
       .principle:hover .icon { opacity: 1; transform: scale(1.1) translateZ(0); }
 
-      /* ── Portfolio — image-hover tilt cards ── */
+      /* â”€â”€ Portfolio â€” image-hover tilt cards â”€â”€ */
       .portfolio-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -572,7 +668,7 @@
         margin: 0;
       }
 
-      /* ── Stats — count-up band ── */
+      /* â”€â”€ Stats â€” count-up band â”€â”€ */
       .stats-band {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -612,7 +708,7 @@
         color: var(--text-faint);
       }
 
-      /* ── Timeline ── */
+      /* â”€â”€ Timeline â”€â”€ */
       .timeline {
         position: relative;
         max-width: 900px;
@@ -669,7 +765,7 @@
         max-width: 480px;
       }
 
-      /* ── Quote ── */
+      /* â”€â”€ Quote â”€â”€ */
       .quote-section {
         text-align: center;
         padding: clamp(80px, 14vw, 160px) clamp(22px, 6vw, 100px);
@@ -706,7 +802,7 @@
       }
       .quote-author strong { color: var(--text); font-weight: 700; }
 
-      /* ── Footer ── */
+      /* â”€â”€ Footer â”€â”€ */
       .footer {
         padding: clamp(50px, 8vw, 90px) clamp(22px, 6vw, 100px) 30px;
         border-top: 1px solid var(--line);
@@ -770,16 +866,7 @@
         color: var(--text-faint);
       }
 
-      /* ── Hero wipe & progress ── */
-      .wipe {
-        position: absolute;
-        z-index: 5;
-        inset: 0;
-        background: linear-gradient(90deg, transparent, rgba(200,232,216,0.15), transparent);
-        transform: translateX(-101%);
-        pointer-events: none;
-        will-change: transform;
-      }
+      /* â”€â”€ Hero progress bar â”€â”€ */
       .progress {
         position: absolute;
         z-index: 6;
@@ -793,7 +880,7 @@
         will-change: transform;
       }
 
-      /* ── Image transition section (gallery) ── */
+      /* â”€â”€ Image transition section (gallery) â”€â”€ */
       .gallery {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -843,7 +930,7 @@
       }
       .gal-item:hover::before { opacity: 1; }
 
-      /* ── Responsive ── */
+      /* â”€â”€ Responsive â”€â”€ */
       @media (max-width: 900px) {
         .nav-links { display: none; }
         .principles-grid { grid-template-columns: 1fr; }
@@ -874,18 +961,17 @@
       }
 
       @media (prefers-reduced-motion: reduce) {
-        .hero:not(.motion-enabled) .shot { opacity: 0; transform: none; transition: none; }
-        .hero:not(.motion-enabled) .shot.three { opacity: 1; }
-        .hero:not(.motion-enabled) .wipe,
-        .hero:not(.motion-enabled) .progress { display: none; }
-        .hero:not(.motion-enabled) .eyebrow,
-        .hero:not(.motion-enabled) h1 .line span,
-        .hero:not(.motion-enabled) .intro,
-        .hero:not(.motion-enabled) .actions,
-        .hero:not(.motion-enabled) .scroll-cue {
-          animation: none; opacity: 1; transform: none;
-        }
+        .page-loader { display: none; }
+        .shot { transform: none !important; }
+        .shot.is-active { opacity: 1; }
         .reveal, .reveal-clip { opacity: 1; transform: none; clip-path: none; transition: none; }
+        .hero .eyebrow,
+        h1 .line span,
+        .intro,
+        .actions,
+        .scroll-cue {
+          animation: none !important; opacity: 1; transform: none;
+        }
         .scroll-cue::after { animation: none; }
         html { scroll-behavior: auto; }
         * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
@@ -893,10 +979,12 @@
     </style>
   </head>
   <body>
-    <div class="grain-fixed"></div>
-    <div class="scroll-progress" id="scrollProgress"></div>
+    <!-- â”€â”€ Page loader â”€â”€ -->
+    <div class="page-loader" id="pageLoader">
+      <div class="loader-ring"></div>
+    </div>
 
-    <!-- ── Navbar ── -->
+    <!-- â”€â”€ Navbar â”€â”€ -->
     <nav class="navbar" id="navbar">
       <a class="brand" href="#hero">BERKSHIRE<br />HATHAWAY<span>EST. 1839</span></a>
       <ul class="nav-links">
@@ -905,22 +993,24 @@
         <li><a href="#timeline">Heritage</a></li>
         <li><a href="#quote">Philosophy</a></li>
       </ul>
-      <button class="nav-right" type="button" aria-pressed="true" aria-label="Pause background motion">
-        <span class="dot"></span><span class="motion-label">PAUSE MOTION</span>
-      </button>
+      <!-- dot + scene label (replicates the video's "â€¢ A LONG-TERM PERSPECTIVE") -->
+      <div class="nav-scene-label" aria-live="polite">
+        <span class="dot"></span>
+        <div class="nav-scene-text" id="navSceneText">
+          <span class="in">A LONG-TERM PERSPECTIVE</span>
+        </div>
+      </div>
     </nav>
 
-    <!-- ── Hero ── -->
+    <!-- â”€â”€ Hero â”€â”€ -->
     <main class="hero" id="hero">
-      <div class="parallax-layer" id="heroParallax">
-        <div class="shot one is-active"></div>
-        <div class="shot two"></div>
-        <div class="shot three"></div>
+      <!-- Slide-wipe track: shots slide horizontally -->
+      <div class="shots-track" id="shotsTrack">
+        <div class="shot one is-active"><div class="shot-inner"></div></div>
+        <div class="shot two"><div class="shot-inner"></div></div>
+        <div class="shot three"><div class="shot-inner"></div></div>
       </div>
-      <div class="grain-fixed" style="position:absolute;z-index:3;opacity:0.08;"></div>
-      <div class="frame"></div>
-      <div class="wipe"></div>
-      <div class="progress"></div>
+      <div class="progress" id="heroProgress"></div>
 
       <div class="shell">
         <section class="main">
@@ -934,8 +1024,14 @@
             decisions made for the long term.
           </p>
           <div class="actions">
-            <a class="cta" href="#principles" data-magnetic>EXPLORE BERKSHIRE ↗</a>
-            <a class="cta-alt" href="#timeline">OUR HERITAGE</a>
+            <a class="cta" href="#principles" data-magnetic>EXPLORE BERKSHIRE â†—</a>
+            <a class="cta-alt" href="#timeline">ANNUAL REPORTS</a>
+          </div>
+          <!-- Slide dots (2 squares like in the video) -->
+          <div class="slide-dots" id="slideDots" aria-label="Slide navigation">
+            <button class="slide-dot active" aria-label="Slide 1"></button>
+            <button class="slide-dot" aria-label="Slide 2"></button>
+            <button class="slide-dot" aria-label="Slide 3"></button>
           </div>
         </section>
       </div>
@@ -943,12 +1039,12 @@
       <div class="scroll-cue">SCROLL</div>
     </main>
 
-    <!-- ── Principles ── -->
+    <!-- â”€â”€ Principles â”€â”€ -->
     <section class="section" id="principles">
       <div class="section-label reveal">CORE PRINCIPLES</div>
       <h2 class="reveal">Discipline is not a tactic.<br><span class="alt">It is the architecture.</span></h2>
       <p class="body-text reveal" style="margin-bottom: 64px;">
-        Three pillars have guided every decision for over a century — through
+        Three pillars have guided every decision for over a century â€” through
         every market, every cycle, every era.
       </p>
       <div class="principles-grid reveal">
@@ -959,7 +1055,7 @@
             <path d="M24 4 L24 44 M8 14 L40 34 M40 14 L8 34" opacity="0.4" />
           </svg>
           <h3>Discipline</h3>
-          <p>Refuse what is merely available. Wait for what is inevitable. The margin of safety is not a number — it is a way of seeing.</p>
+          <p>Refuse what is merely available. Wait for what is inevitable. The margin of safety is not a number â€” it is a way of seeing.</p>
         </div>
         <div class="principle">
           <div class="num">02</div>
@@ -969,7 +1065,7 @@
             <path d="M4 24 H44" opacity="0.4" />
           </svg>
           <h3>Stewardship</h3>
-          <p>Own businesses, not tickers. Treat every holding as a trust passed forward — to the next manager, the next generation, the next century.</p>
+          <p>Own businesses, not tickers. Treat every holding as a trust passed forward â€” to the next manager, the next generation, the next century.</p>
         </div>
         <div class="principle">
           <div class="num">03</div>
@@ -978,12 +1074,12 @@
             <path d="M24 8 L24 24 L36 30" />
           </svg>
           <h3>Longevity</h3>
-          <p>Compound patiently. The most powerful force in finance is not leverage or timing — it is the willingness to stay.</p>
+          <p>Compound patiently. The most powerful force in finance is not leverage or timing â€” it is the willingness to stay.</p>
         </div>
       </div>
     </section>
 
-    <!-- ── Portfolio ── -->
+    <!-- â”€â”€ Portfolio â”€â”€ -->
     <section class="section dark" id="portfolio">
       <div class="section-label reveal">ENDURING HOLDINGS</div>
       <h2 class="reveal">A portfolio built to <span class="alt">outlast trends.</span></h2>
@@ -1010,7 +1106,7 @@
       </div>
     </section>
 
-    <!-- ── Stats ── -->
+    <!-- â”€â”€ Stats â”€â”€ -->
     <section class="stats-band reveal">
       <div class="stat-cell"><div class="num" data-count="1.1" data-suffix="T" data-prefix="$">$0<span class="suffix">T</span></div><label>TOTAL ASSETS</label></div>
       <div class="stat-cell"><div class="num" data-count="60" data-suffix="+">0<span class="suffix">+</span></div><label>SUBSIDIARY COMPANIES</label></div>
@@ -1018,32 +1114,32 @@
       <div class="stat-cell"><div class="num" data-count="1965" data-suffix="">0</div><label>BUFFETT ERA BEGINS</label></div>
     </section>
 
-    <!-- ── Timeline ── -->
+    <!-- â”€â”€ Timeline â”€â”€ -->
     <section class="section" id="timeline">
       <div class="section-label reveal">A CENTURY OF CONVICTION</div>
       <h2 class="reveal">Heritage is not history.<br><span class="alt">It is infrastructure.</span></h2>
       <div class="timeline" style="margin-top: 56px;">
-        <div class="tl-item reveal"><div class="tl-year">1839</div><p>The Valley Falls Company is founded in Rhode Island — the earliest thread in the Berkshire tapestry.</p></div>
-        <div class="tl-item reveal"><div class="tl-year">1955</div><p>Berkshire Fine Spinning Associates merges with Hathaway Manufacturing — the combined entity struggles for years.</p></div>
+        <div class="tl-item reveal"><div class="tl-year">1839</div><p>The Valley Falls Company is founded in Rhode Island â€” the earliest thread in the Berkshire tapestry.</p></div>
+        <div class="tl-item reveal"><div class="tl-year">1955</div><p>Berkshire Fine Spinning Associates merges with Hathaway Manufacturing â€” the combined entity struggles for years.</p></div>
         <div class="tl-item reveal"><div class="tl-year">1965</div><p>Warren Buffett takes control of Berkshire Hathaway and begins transforming a failing textile mill into a holding empire.</p></div>
-        <div class="tl-item reveal"><div class="tl-year">1985</div><p>The last textile mill closes. The pivot from manufacturing to investing is complete — the old name carries a new mission.</p></div>
-        <div class="tl-item reveal"><div class="tl-year">2008</div><p>Amid global crisis, Berkshire invests $5 billion in Goldman Sachs preferred stock — conviction when others flee.</p></div>
-        <div class="tl-item reveal"><div class="tl-year">2024</div><p>Berkshire's market capitalization surpasses $1 trillion — a century of patience, discipline, and compounding made visible.</p></div>
+        <div class="tl-item reveal"><div class="tl-year">1985</div><p>The last textile mill closes. The pivot from manufacturing to investing is complete â€” the old name carries a new mission.</p></div>
+        <div class="tl-item reveal"><div class="tl-year">2008</div><p>Amid global crisis, Berkshire invests $5 billion in Goldman Sachs preferred stock â€” conviction when others flee.</p></div>
+        <div class="tl-item reveal"><div class="tl-year">2024</div><p>Berkshire's market capitalization surpasses $1 trillion â€” a century of patience, discipline, and compounding made visible.</p></div>
       </div>
     </section>
 
-    <!-- ── Quote ── -->
+    <!-- â”€â”€ Quote â”€â”€ -->
     <section class="section dark quote-section" id="quote">
       <div class="section-label reveal">PHILOSOPHY</div>
       <blockquote class="reveal">
         <span class="mark">"</span>Our favorite holding period is<span class="alt"> forever</span>.<span class="mark">"</span>
       </blockquote>
       <div class="quote-author reveal">
-        <strong>WARREN E. BUFFETT</strong> · CHAIRMAN &amp; CEO
+        <strong>WARREN E. BUFFETT</strong> Â· CHAIRMAN &amp; CEO
       </div>
     </section>
 
-    <!-- ── Footer ── -->
+    <!-- â”€â”€ Footer â”€â”€ -->
     <footer class="footer">
       <div class="footer-top">
         <div class="footer-brand">BERKSHIRE<br />HATHAWAY<span>EST. 1839</span></div>
@@ -1069,113 +1165,166 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <small>INDEPENDENT DESIGN CONCEPT · NOT AN OFFICIAL WEBSITE</small>
-        <small>© 2026 NOIR CONCEPT</small>
+        <small>INDEPENDENT DESIGN CONCEPT Â· NOT AN OFFICIAL WEBSITE</small>
+        <small>Â© 2026 NOIR CONCEPT</small>
       </div>
     </footer>
 
-    <script>
       (() => {
-        /* ═══════════════════════════════════════════
-           120fps ENGINE — only transform & opacity
-           ═══════════════════════════════════════════ */
+        /* ═══════════════════════════════════════════════════
+           120fps ENGINE — all animation via transform/opacity
+           ═══════════════════════════════════════════════════ */
 
-        /* ── Hero crossfade with Ken Burns ── */
-        const hero = document.querySelector(".hero");
-        const shots = [...document.querySelectorAll(".shot")];
-        const wipe = document.querySelector(".wipe");
-        const progress = document.querySelector(".progress");
-        const toggle = document.querySelector(".nav-right");
-        const label = document.querySelector(".motion-label");
+        const SCENE_DURATION = 3800;
+        const WIPE_DURATION  = 680;
+        const EASE_WIPE = "cubic-bezier(0.76, 0, 0.24, 1)";
+
+        const SCENE_LABELS = [
+          "A LONG-TERM PERSPECTIVE",
+          "ENDURING BUSINESSES",
+          "BUILT ON CONVICTION",
+        ];
+
+        /* Page loader */
+        const loader = document.getElementById("pageLoader");
+        if (loader) {
+          window.addEventListener("load", () => setTimeout(() => loader.classList.add("gone"), 300));
+          setTimeout(() => loader.classList.add("gone"), 2000);
+        }
+
+        const shots    = [...document.querySelectorAll(".shot")];
+        const progress = document.getElementById("heroProgress");
+        const dotsEl   = [...document.querySelectorAll(".slide-dot")];
+        const navText  = document.getElementById("navSceneText");
+
+        let active = 0;
+        let timer;
+        let progressAnim;
+        let isAnimating = false;
         const reduce = matchMedia("(prefers-reduced-motion: reduce)");
-        const forceMotion = new URLSearchParams(location.search).has("motion");
-        const sceneDuration = 3200;
-        let active = 0, timer, motionEnabled = forceMotion || !reduce.matches;
-        let wipeAnim, progressAnim;
 
-        const animateAccents = () => {
-          wipeAnim?.cancel();
-          progressAnim?.cancel();
-          wipeAnim = wipe.animate(
-            [{ transform: "translateX(-101%)" }, { transform: "translateX(101%)" }],
-            { duration: 200, easing: "cubic-bezier(.16,1,.3,1)" }
-          );
-          progressAnim = progress.animate(
-            [{ transform: "scaleX(1)" }, { transform: "scaleX(0)" }],
-            { duration: sceneDuration, easing: "linear" }
-          );
+        const positionShots = (activeIdx) => {
+          shots.forEach((s, i) => {
+            s.style.transition = "none";
+            if (i === activeIdx) {
+              s.style.transform = "translateX(0) translateZ(0)";
+              s.classList.add("is-active");
+            } else {
+              s.style.transform = "translateX(100%) translateZ(0)";
+              s.classList.remove("is-active");
+            }
+          });
         };
 
-        const show = (index, animate = true) => {
-          active = index;
-          shots.forEach((s, i) => s.classList.toggle("is-active", i === active));
-          if (animate) animateAccents();
+        const setNavLabel = (label) => {
+          if (!navText) return;
+          const current = navText.querySelector(".in");
+          if (!current) return;
+          const next = document.createElement("span");
+          next.className = "next";
+          next.textContent = label;
+          navText.appendChild(next);
+          next.getBoundingClientRect();
+          current.classList.replace("in", "out");
+          next.classList.replace("next", "in");
+          setTimeout(() => current.remove(), 500);
+        };
+
+        const updateDots = (idx) => {
+          dotsEl.forEach((d, i) => d.classList.toggle("active", i === idx));
+        };
+
+        const slideTo = (nextIdx) => {
+          if (isAnimating || nextIdx === active) return;
+          isAnimating = true;
+          const outShot = shots[active];
+          const inShot  = shots[nextIdx];
+          inShot.style.transition = "none";
+          inShot.style.transform  = "translateX(100%) translateZ(0)";
+          inShot.getBoundingClientRect();
+          outShot.style.transition = `transform ${WIPE_DURATION}ms ${EASE_WIPE}`;
+          inShot.style.transition  = `transform ${WIPE_DURATION}ms ${EASE_WIPE}`;
+          outShot.style.transform = "translateX(-100%) translateZ(0)";
+          inShot.style.transform  = "translateX(0) translateZ(0)";
+          inShot.classList.add("is-active");
+          outShot.classList.remove("is-active");
+          active = nextIdx;
+          updateDots(active);
+          setNavLabel(SCENE_LABELS[active]);
+          setTimeout(() => {
+            outShot.style.transition = "none";
+            outShot.style.transform  = "translateX(100%) translateZ(0)";
+            isAnimating = false;
+          }, WIPE_DURATION);
+        };
+
+        const startProgress = () => {
+          if (!progress) return;
+          progressAnim?.cancel();
+          progressAnim = progress.animate(
+            [{ transform: "scaleX(0)", transformOrigin: "left" },
+             { transform: "scaleX(1)", transformOrigin: "left" }],
+            { duration: SCENE_DURATION, easing: "linear", fill: "forwards" }
+          );
         };
 
         const schedule = () => {
           clearTimeout(timer);
-          if (!motionEnabled || document.hidden) return;
-          timer = setTimeout(() => { show((active + 1) % shots.length); schedule(); }, sceneDuration);
+          if (document.hidden || reduce.matches) return;
+          timer = setTimeout(() => {
+            slideTo((active + 1) % shots.length);
+            startProgress();
+            schedule();
+          }, SCENE_DURATION);
         };
 
-        const renderControl = () => {
-          hero.classList.toggle("motion-enabled", motionEnabled);
-          toggle.setAttribute("aria-pressed", String(motionEnabled));
-          toggle.setAttribute("aria-label", motionEnabled ? "Pause background motion" : "Play background motion");
-          label.textContent = motionEnabled ? "PAUSE MOTION" : "PLAY MOTION";
-        };
+        dotsEl.forEach((d, i) => {
+          d.addEventListener("click", () => {
+            slideTo(i);
+            clearTimeout(timer);
+            startProgress();
+            schedule();
+          });
+        });
 
-        const setMotion = (enabled) => {
-          motionEnabled = enabled;
-          clearTimeout(timer);
-          wipeAnim?.cancel();
-          progressAnim?.cancel();
-          renderControl();
-          if (motionEnabled) { animateAccents(); schedule(); }
-        };
-
-        toggle.addEventListener("click", () => setMotion(!motionEnabled));
         document.addEventListener("visibilitychange", () => {
           if (document.hidden) { clearTimeout(timer); progressAnim?.pause(); }
-          else if (motionEnabled) { progressAnim?.play(); schedule(); }
+          else { progressAnim?.play(); schedule(); }
         });
-        reduce.addEventListener("change", (e) => { if (!forceMotion) setMotion(!e.matches); });
 
-        renderControl();
-        if (motionEnabled) { animateAccents(); schedule(); } else { show(2, false); }
+        reduce.addEventListener("change", () => {
+          if (reduce.matches) clearTimeout(timer); else schedule();
+        });
 
-        /* ── Navbar scroll state ── */
+        positionShots(0);
+        updateDots(0);
+        if (!reduce.matches) { startProgress(); schedule(); }
+
+        /* Navbar scroll */
         const navbar = document.getElementById("navbar");
-        const scrollProgress = document.getElementById("scrollProgress");
+        const scrollBar = document.getElementById("scrollProgress");
         let ticking = false;
-
-        const onScroll = () => {
+        window.addEventListener("scroll", () => {
           if (ticking) return;
           ticking = true;
           requestAnimationFrame(() => {
             const sy = window.scrollY;
-            navbar.classList.toggle("scrolled", sy > 40);
-            const docH = document.documentElement.scrollHeight - window.innerHeight;
-            scrollProgress.style.transform = `scaleX(${docH > 0 ? sy / docH : 0})`;
+            if (navbar) navbar.classList.toggle("scrolled", sy > 40);
+            if (scrollBar) {
+              const docH = document.documentElement.scrollHeight - window.innerHeight;
+              scrollBar.style.transform = `scaleX(${docH > 0 ? sy / docH : 0})`;
+            }
             ticking = false;
           });
-        };
-        window.addEventListener("scroll", onScroll, { passive: true });
+        }, { passive: true });
 
-        /* ── Scroll reveal with IntersectionObserver ── */
-        const reveals = document.querySelectorAll(".reveal");
+        /* Scroll reveal */
         const io = new IntersectionObserver((entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add("in");
-              io.unobserve(entry.target);
-            }
-          });
+          entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
         }, { threshold: 0.12, rootMargin: "0px 0px -60px 0px" });
-        reveals.forEach((el) => io.observe(el));
+        document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
 
-        /* ── Active nav link ── */
-        const sections = document.querySelectorAll("section[id], main[id]");
+        /* Active nav */
         const navLinks = document.querySelectorAll(".nav-links a");
         const navIO = new IntersectionObserver((entries) => {
           entries.forEach((entry) => {
@@ -1185,74 +1334,56 @@
             }
           });
         }, { threshold: 0.5 });
-        sections.forEach((s) => navIO.observe(s));
+        document.querySelectorAll("section[id], main[id]").forEach((s) => navIO.observe(s));
 
-        /* ── Count-up animation for stats ── */
-        const statNums = document.querySelectorAll(".stat-cell .num[data-count]");
+        /* Count-up stats */
         const statIO = new IntersectionObserver((entries) => {
           entries.forEach((entry) => {
             if (!entry.isIntersecting) return;
-            const el = entry.target;
+            const el     = entry.target;
             const target = parseFloat(el.dataset.count);
             const suffix = el.dataset.suffix || "";
             const prefix = el.dataset.prefix || "";
             const isFloat = target % 1 !== 0;
-            const duration = 1600;
-            const start = performance.now();
+            const t0 = performance.now();
             const tick = (now) => {
-              const t = Math.min((now - start) / duration, 1);
-              const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
-              const val = target * eased;
-              const display = isFloat ? val.toFixed(1) : Math.round(val);
-              el.innerHTML = `${prefix}${display}<span class="suffix">${suffix}</span>`;
+              const t = Math.min((now - t0) / 1600, 1);
+              const e = 1 - Math.pow(1 - t, 3);
+              el.innerHTML = `${prefix}${isFloat ? (target*e).toFixed(1) : Math.round(target*e)}<span class="suffix">${suffix}</span>`;
               if (t < 1) requestAnimationFrame(tick);
             };
             requestAnimationFrame(tick);
             statIO.unobserve(el);
           });
         }, { threshold: 0.5 });
-        statNums.forEach((el) => statIO.observe(el));
+        document.querySelectorAll(".stat-cell .num[data-count]").forEach((el) => statIO.observe(el));
 
-        /* ── Parallax on hero images (scroll-driven, GPU only) ── */
-        const parallaxLayer = document.getElementById("heroParallax");
-        let parallaxTick = false;
-        const onParallax = () => {
-          if (parallaxTick) return;
-          parallaxTick = true;
+        /* Parallax hero */
+        const shotsTrack = document.getElementById("shotsTrack");
+        let pTick = false;
+        window.addEventListener("scroll", () => {
+          if (pTick) return;
+          pTick = true;
           requestAnimationFrame(() => {
             const sy = window.scrollY;
-            if (sy < window.innerHeight) {
-              parallaxLayer.style.transform = `translateY(${sy * 0.35}px) scale(${1 + sy * 0.0003}) translateZ(0)`;
-            }
-            parallaxTick = false;
+            if (sy < window.innerHeight && shotsTrack)
+              shotsTrack.style.transform = `translateY(${sy * 0.28}px) translateZ(0)`;
+            pTick = false;
           });
-        };
-        window.addEventListener("scroll", onParallax, { passive: true });
+        }, { passive: true });
 
-        /* ── Magnetic button effect ── */
+        /* Magnetic buttons */
         document.querySelectorAll("[data-magnetic]").forEach((btn) => {
           btn.addEventListener("mousemove", (e) => {
-            const rect = btn.getBoundingClientRect();
-            const x = e.clientX - rect.left - rect.width / 2;
-            const y = e.clientY - rect.top - rect.height / 2;
-            btn.style.transform = `translate(${x * 0.25}px, ${y * 0.25}px) translateZ(0)`;
+            const r = btn.getBoundingClientRect();
+            btn.style.transform = `translate(${(e.clientX-r.left-r.width/2)*0.25}px,${(e.clientY-r.top-r.height/2)*0.25}px) translateZ(0)`;
           });
-          btn.addEventListener("mouseleave", () => {
-            btn.style.transform = "translate(0, 0) translateZ(0)";
-          });
+          btn.addEventListener("mouseleave", () => { btn.style.transform = "translate(0,0) translateZ(0)"; });
         });
 
-        /* ── Stagger principle cards ── */
-        const principles = document.querySelectorAll(".principle");
-        principles.forEach((p, i) => {
-          p.style.transitionDelay = `${i * 120}ms`;
-        });
-
-        /* ── Stagger portfolio cards ── */
-        const holdCards = document.querySelectorAll(".hold-card");
-        holdCards.forEach((c, i) => {
-          c.style.transitionDelay = `${i * 60}ms`;
-        });
+        /* Stagger */
+        document.querySelectorAll(".principle").forEach((p, i) => { p.style.transitionDelay = `${i*120}ms`; });
+        document.querySelectorAll(".hold-card").forEach((c, i) => { c.style.transitionDelay = `${i*60}ms`; });
       })();
     </script>
   </body>
