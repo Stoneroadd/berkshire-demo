@@ -1,270 +1,901 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width,initial-scale=1,viewport-fit=cover"
-    />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
     <meta name="theme-color" content="#050608" />
-    <title>Berkshire Hathaway — Noir Concept</title>
+    <meta name="description" content="Berkshire Hathaway â€” Noir Concept. A legacy of disciplined investing, enduring businesses, and decisions made for the long term." />
+    <title>Berkshire Hathaway â€” Noir Concept</title>
     <style>
       @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap");
+
       :root {
         color-scheme: dark;
         font-family: Manrope, Arial, sans-serif;
+        --bg: #050608;
+        --bg-soft: #0a0c10;
+        --bg-card: #0d0f14;
+        --text: #eef2f6;
+        --text-dim: #a8b0bc;
+        --text-faint: #6b7480;
+        --accent: #c8e8d8;
+        --accent-warm: #d5e0e7;
+        --line: rgba(255,255,255,0.08);
+        --line-strong: rgba(255,255,255,0.15);
+        /* 200ms professional micro-interactions */
+        --t-fast: 200ms;
+        --t-med: 400ms;
+        --t-slow: 800ms;
+        /* GPU-friendly cubic-bezier */
+        --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+        --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
       }
-      * {
-        box-sizing: border-box;
-      }
-      html,
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
       body {
         margin: 0;
-        min-height: 100%;
-        background: #050608;
-        color: white;
+        background: var(--bg);
+        color: var(--text);
         overflow-x: hidden;
       }
-      body {
-        min-height: 100svh;
+
+      /* â”€â”€ GPU acceleration layer â”€â”€ */
+      .gpu { will-change: transform, opacity; transform: translateZ(0); backface-visibility: hidden; }
+
+      /* â”€â”€ Grain overlay (fixed, whole page) â”€â”€ */
+      .grain-fixed {
+        position: fixed;
+        inset: 0;
+        z-index: 999;
+        opacity: 0.04;
+        pointer-events: none;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+        mix-blend-mode: overlay;
       }
+
+      /* â”€â”€ Scroll progress bar â”€â”€ */
+      .scroll-progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        z-index: 1000;
+        background: var(--accent);
+        transform: scaleX(0);
+        transform-origin: left;
+        will-change: transform;
+      }
+
+      /* â”€â”€ Reveal system â”€â”€ */
+      .reveal {
+        opacity: 0;
+        transform: translateY(50px);
+        transition:
+          opacity var(--t-slow) var(--ease),
+          transform var(--t-slow) var(--ease);
+        will-change: transform, opacity;
+      }
+      .reveal.in { opacity: 1; transform: translateZ(0); }
+
+      /* clip-path reveal â€” wipes in from bottom */
+      .reveal-clip {
+        clip-path: inset(100% 0 0 0);
+        transition: clip-path var(--t-slow) var(--ease);
+        will-change: clip-path;
+      }
+      .reveal-clip.in { clip-path: inset(0 0 0 0); }
+
+      /* Word-by-word text reveal */
+      .word-reveal {
+        overflow: hidden;
+        display: inline-block;
+      }
+      .word-reveal span {
+        display: inline-block;
+        transform: translateY(110%);
+        transition: transform var(--t-slow) var(--ease);
+        will-change: transform;
+      }
+      .word-reveal.in span { transform: translateY(0); }
+
+      /* â”€â”€ Section label â”€â”€ */
+      .section-label {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.35em;
+        color: var(--text-dim);
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 28px;
+      }
+      .section-label::before {
+        content: "";
+        width: 0;
+        height: 1px;
+        background: var(--accent);
+        transition: width var(--t-med) var(--ease) 0.2s;
+      }
+      .section-label.in::before { width: 36px; }
+
+      h2 {
+        font-size: clamp(36px, 6vw, 64px);
+        line-height: 0.92;
+        letter-spacing: -0.04em;
+        font-weight: 600;
+        margin: 0 0 40px;
+        max-width: 800px;
+      }
+      h2 .alt { color: var(--accent-warm); }
+
+      .body-text {
+        font-family: "DM Sans", sans-serif;
+        font-size: clamp(14px, 1.6vw, 18px);
+        line-height: 1.75;
+        color: var(--text-dim);
+        max-width: 520px;
+      }
+
+      /* â”€â”€ Navbar â”€â”€ */
+      .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: clamp(16px, 2.5vw, 28px) clamp(22px, 6vw, 100px);
+        transition:
+          background var(--t-med) var(--ease),
+          border-color var(--t-med) var(--ease),
+          padding var(--t-med) var(--ease);
+        border-bottom: 1px solid transparent;
+      }
+      .navbar.scrolled {
+        background: rgba(5, 6, 8, 0.72);
+        backdrop-filter: blur(24px) saturate(180%);
+        -webkit-backdrop-filter: blur(24px) saturate(180%);
+        border-bottom: 1px solid var(--line);
+        padding-top: clamp(10px, 1.5vw, 16px);
+        padding-bottom: clamp(10px, 1.5vw, 16px);
+      }
+      .brand {
+        font-size: clamp(13px, 1.3vw, 18px);
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        line-height: 1.05;
+        text-decoration: none;
+        color: var(--text);
+      }
+      .brand span {
+        display: block;
+        font-weight: 500;
+        letter-spacing: 0.24em;
+        font-size: 8px;
+        margin-top: 5px;
+        color: var(--text-faint);
+      }
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .nav-links a {
+        color: var(--text-dim);
+        text-decoration: none;
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        font-weight: 600;
+        transition: color var(--t-fast) var(--ease-out);
+        position: relative;
+      }
+      .nav-links a::after {
+        content: "";
+        position: absolute;
+        bottom: -6px;
+        left: 0;
+        width: 0;
+        height: 1px;
+        background: var(--accent);
+        transition: width var(--t-fast) var(--ease-out);
+      }
+      .nav-links a:hover { color: var(--text); }
+      .nav-links a:hover::after { width: 100%; }
+      .nav-links a.active { color: var(--text); }
+      .nav-links a.active::after { width: 100%; }
+
+      .nav-right {
+        appearance: none;
+        border: 1px solid var(--line-strong);
+        background: transparent;
+        padding: 8px 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--text);
+        font: inherit;
+        font-size: 9px;
+        letter-spacing: 0.15em;
+        cursor: pointer;
+        border-radius: 100px;
+        transition:
+          border-color var(--t-fast) var(--ease-out),
+          background var(--t-fast) var(--ease-out);
+      }
+      .nav-right:hover { border-color: var(--accent); background: rgba(200,232,216,0.05); }
+      .nav-right:focus-visible { outline: 1px solid var(--accent); outline-offset: 4px; }
+      .dot {
+        width: 6px;
+        height: 6px;
+        background: var(--accent);
+        border-radius: 50%;
+        transition: background var(--t-fast);
+      }
+      .hero:not(.motion-enabled) .dot { background: var(--text-faint); }
+
+      /* â”€â”€ Page loader (circle) â”€â”€ */
+      .page-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 2000;
+        background: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 600ms var(--ease), visibility 600ms;
+      }
+      .page-loader.gone { opacity: 0; visibility: hidden; }
+      .loader-ring {
+        width: 36px;
+        height: 36px;
+        border: 1.5px solid rgba(255,255,255,0.12);
+        border-top-color: rgba(255,255,255,0.7);
+        border-radius: 50%;
+        animation: spin 700ms linear infinite;
+        will-change: transform;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+
+      /* â”€â”€ Hero â”€â”€ */
       .hero {
         min-height: 100svh;
         position: relative;
         isolation: isolate;
         overflow: hidden;
-        background: #050608;
+        background: var(--bg);
+      }
+
+      /*
+       * SLIDE-WIPE system: each shot sits at translateX(100%)
+       * and the active one is at translateX(0).
+       * Transition slides the incoming shot FROM right â†’ 0
+       * while outgoing goes FROM 0 â†’ -100% (clipped by overflow:hidden).
+       * Ken Burns runs independently on the image scale.
+       */
+      .shots-track {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
       }
       .shot {
         position: absolute;
         inset: 0;
         background-size: cover;
         background-position: center;
-        opacity: 0;
-        transform: scale(1.08);
-        transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-        will-change: opacity, transform;
+        transform: translateX(100%) translateZ(0);
+        will-change: transform;
+        backface-visibility: hidden;
       }
-      .shot.is-active {
-        opacity: 1;
-        transform: scale(1.02);
-        transition:
-          opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-          transform 3.2s linear;
+      /* The inner scale element for Ken Burns without moving the clip */
+      .shot-inner {
+        position: absolute;
+        inset: -8%;
+        background-size: cover;
+        background-position: center;
+        transform: scale(1.08) translateZ(0);
+        will-change: transform;
+        transition: transform 5000ms linear;
       }
-      .shot.one {
-        background-image: url("https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1800&q=85");
+      .shot.is-active .shot-inner {
+        transform: scale(1.0) translateZ(0);
       }
-      .shot.two {
-        background-image: url("https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1800&q=85");
+      .shot.one .shot-inner {
+        background-image: url("https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1920&q=90");
       }
-      .shot.three {
-        background-image: url("https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1800&q=85");
+      .shot.two .shot-inner {
+        background-image: url("https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1920&q=90");
       }
+      .shot.three .shot-inner {
+        background-image: url("https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1920&q=90");
+      }
+
+      /* Parallax layer for depth */
+      .parallax-layer {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        will-change: transform;
+        transform: translateZ(0);
+      }
+
       .hero:before {
         content: "";
         position: absolute;
         inset: 0;
-        z-index: 1;
-        background:
-          linear-gradient(
-            90deg,
-            rgba(1, 3, 7, 0.84) 0%,
-            rgba(1, 3, 7, 0.48) 52%,
-            rgba(1, 3, 7, 0.12)
-          ),
-          linear-gradient(
-            0deg,
-            rgba(0, 0, 0, 0.86),
-            transparent 48%,
-            rgba(0, 0, 0, 0.42)
-          );
-        pointer-events: none;
-      }
-      .grain {
-        position: absolute;
-        inset: 0;
         z-index: 2;
-        opacity: 0.18;
+        background:
+          linear-gradient(90deg, rgba(1,3,7,0.88) 0%, rgba(1,3,7,0.5) 52%, rgba(1,3,7,0.14)),
+          linear-gradient(0deg, var(--bg) 4%, transparent 50%, rgba(0,0,0,0.42));
         pointer-events: none;
-        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.32'/%3E%3C/svg%3E");
       }
+
+      /* Slide-counter dots (two tiny squares like in the video) */
+      .slide-dots {
+        display: flex;
+        gap: 5px;
+        margin-top: 28px;
+      }
+      .slide-dot {
+        width: 8px;
+        height: 8px;
+        border: 1px solid rgba(255,255,255,0.4);
+        background: transparent;
+        transition: background var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out);
+        cursor: pointer;
+        padding: 0;
+        appearance: none;
+      }
+      .slide-dot.active {
+        background: rgba(255,255,255,0.85);
+        border-color: transparent;
+      }
+
       .shell {
         position: relative;
-        z-index: 3;
+        z-index: 4;
         min-height: 100svh;
         display: flex;
         flex-direction: column;
-        padding: clamp(22px, 4vw, 58px) clamp(22px, 6vw, 100px) 26px;
-      }
-      .nav {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 18px;
-      }
-      .brand {
-        font-size: clamp(14px, 1.5vw, 21px);
-        font-weight: 800;
-        letter-spacing: -0.04em;
-        line-height: 1.05;
-      }
-      .brand span {
-        display: block;
-        font-weight: 500;
-        letter-spacing: 0.24em;
-        font-size: 9px;
-        margin-top: 7px;
-        color: #a8b0bc;
-      }
-      .nav-right {
-        appearance: none;
-        border: 0;
-        background: transparent;
-        padding: 8px 0;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        color: #e7eaf0;
-        font: inherit;
-        font-size: 10px;
-        letter-spacing: 0.17em;
-        cursor: pointer;
-      }
-      .nav-right:focus-visible {
-        outline: 1px solid #e9f1f1;
-        outline-offset: 6px;
-      }
-      .dot {
-        width: 6px;
-        height: 6px;
-        background: #c8e8d8;
-        border-radius: 50%;
-        transition: background 0.2s;
-      }
-      .hero:not(.motion-enabled) .dot {
-        background: #8d969f;
+        padding: clamp(80px, 12vw, 130px) clamp(22px, 6vw, 100px) 30px;
       }
       .main {
         margin: auto 0;
         max-width: 950px;
-        padding: 70px 0 58px;
+        padding: 40px 0 50px;
       }
       .eyebrow {
         font-size: 10px;
         font-weight: 700;
         letter-spacing: 0.35em;
-        color: #c6d0da;
+        color: var(--text-dim);
         display: flex;
         align-items: center;
         gap: 16px;
         opacity: 0;
-        animation: rise 0.7s 0.35s forwards;
+        animation: rise var(--t-slow) var(--ease) 0.35s forwards;
       }
-      .eyebrow:before {
+      .eyebrow::before {
         content: "";
-        width: 36px;
+        width: 0;
         height: 1px;
-        background: #dce4e9;
+        background: var(--accent);
+        animation: lineGrow var(--t-med) var(--ease) 0.5s forwards;
       }
+      @keyframes lineGrow { to { width: 36px; } }
+
+      /* Hero title â€” word-by-word slide up */
       h1 {
-        font-size: clamp(58px, 11vw, 96px);
+        font-size: clamp(52px, 10vw, 96px);
         line-height: 0.89;
         letter-spacing: -0.04em;
         font-weight: 600;
         margin: 27px 0 28px;
         max-width: 1100px;
       }
-      h1 span {
+      h1 .line {
         display: block;
+        overflow: hidden;
+      }
+      h1 .line span {
+        display: block;
+        transform: translateY(110%);
         opacity: 0;
-        transform: translateY(32px);
-        animation: rise 0.7s 0.55s forwards;
+        animation: heroWord var(--t-slow) var(--ease) forwards;
       }
-      h1 span:nth-child(2) {
-        animation-delay: 0.8s;
-        color: #d5e0e7;
+      h1 .line:nth-child(1) span { animation-delay: 0.55s; }
+      h1 .line:nth-child(2) span { animation-delay: 0.75s; color: var(--accent-warm); }
+      @keyframes heroWord {
+        to { transform: translateY(0); opacity: 1; }
       }
+
       .intro {
         font-family: "DM Sans", sans-serif;
         font-size: clamp(13px, 1.5vw, 17px);
         line-height: 1.7;
-        color: #c4cbd3;
+        color: var(--text-dim);
         max-width: 490px;
         opacity: 0;
-        animation: rise 0.7s 1.05s forwards;
+        animation: rise var(--t-slow) var(--ease) 1.05s forwards;
       }
+      @keyframes rise {
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* Magnetic CTA */
       .actions {
         display: flex;
         align-items: center;
         gap: 25px;
         margin-top: 32px;
         opacity: 0;
-        animation: rise 0.7s 1.35s forwards;
+        animation: rise var(--t-slow) var(--ease) 1.35s forwards;
       }
       .cta {
-        color: #101417;
-        background: #e9f1f1;
-        padding: 15px 21px;
+        color: var(--bg);
+        background: var(--text);
+        padding: 15px 24px;
         text-decoration: none;
         font-size: 11px;
         letter-spacing: 0.07em;
         font-weight: 800;
         transition:
-          background 0.2s,
-          transform 0.2s;
+          background var(--t-fast) var(--ease-out),
+          box-shadow var(--t-med) var(--ease),
+          transform var(--t-fast) var(--ease-out);
+        will-change: transform;
       }
       .cta:hover {
         background: white;
-        transform: translateY(-2px);
+        box-shadow: 0 20px 60px rgba(255,255,255,0.15);
       }
-      .secondary {
-        color: white;
+      .cta-alt {
+        color: var(--text);
         text-decoration: none;
         font-size: 11px;
         letter-spacing: 0.09em;
-        border-bottom: 1px solid #ffffff80;
-        padding-bottom: 7px;
-      }
-      .footer {
-        display: flex;
-        justify-content: space-between;
-        align-items: end;
-        gap: 18px;
-        border-top: 1px solid #ffffff40;
-        padding-top: 20px;
-      }
-      .footer small {
-        font-size: 9px;
-        letter-spacing: 0.18em;
-        color: #b8c2cc;
-      }
-      .stats {
-        display: flex;
-        gap: clamp(20px, 5vw, 75px);
-      }
-      .stat strong {
-        font-size: clamp(17px, 2.3vw, 30px);
         font-weight: 600;
-        letter-spacing: -0.04em;
-        display: block;
+        border-bottom: 1px solid rgba(255,255,255,0.4);
+        padding-bottom: 7px;
+        transition:
+          border-color var(--t-fast) var(--ease-out),
+          color var(--t-fast) var(--ease-out);
       }
-      .stat label {
-        display: block;
-        font-size: 9px;
-        color: #aebbc6;
-        letter-spacing: 0.16em;
-        margin-top: 7px;
-      }
-      .wipe {
+      .cta-alt:hover { border-color: var(--accent); color: var(--accent); }
+
+      /* Scroll cue */
+      .scroll-cue {
         position: absolute;
-        z-index: 5;
-        inset: 0;
-        background: #e8eff0;
-        transform: translateX(-101%);
-        pointer-events: none;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 4;
+        font-size: 9px;
+        letter-spacing: 0.25em;
+        color: var(--text-faint);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        opacity: 0;
+        animation: rise var(--t-slow) var(--ease) 1.6s forwards;
+      }
+      .scroll-cue::after {
+        content: "";
+        width: 1px;
+        height: 32px;
+        background: linear-gradient(to bottom, var(--text-dim), transparent);
+        animation: scrollPulse 2.2s var(--ease-in-out) infinite;
+        will-change: opacity, transform;
+      }
+      @keyframes scrollPulse {
+        0%, 100% { opacity: 0.2; transform: scaleY(0.6); }
+        50% { opacity: 1; transform: scaleY(1); }
+      }
+
+      /* Nav label pill (dot + text, replaces PAUSE MOTION button) */
+      .nav-scene-label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 10px;
+        letter-spacing: 0.16em;
+        color: var(--text-dim);
+        font-weight: 600;
+      }
+      .nav-scene-label .dot {
+        width: 7px;
+        height: 7px;
+        background: white;
+        border-radius: 50%;
+        flex-shrink: 0;
+        transition: background var(--t-fast);
+      }
+      .nav-scene-text {
+        overflow: hidden;
+        position: relative;
+        height: 1.2em;
+      }
+      /* Clip: outgoing slides up, incoming slides in from below */
+      .nav-scene-text span {
+        display: block;
+        line-height: 1.2em;
+        position: absolute;
+        white-space: nowrap;
+        transition: transform 400ms var(--ease), opacity 400ms var(--ease);
+        will-change: transform, opacity;
+      }
+      .nav-scene-text span.out {
+        transform: translateY(-110%);
+        opacity: 0;
+      }
+      .nav-scene-text span.in {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      .nav-scene-text span.next {
+        transform: translateY(110%);
+        opacity: 0;
+      }
+
+      /* â”€â”€ Section wrappers â”€â”€ */
+      .section {
+        position: relative;
+        padding: clamp(70px, 12vw, 140px) clamp(22px, 6vw, 100px);
+        overflow: hidden;
+      }
+      .section.dark { background: var(--bg-soft); }
+
+      /* â”€â”€ Principles â€” staggered clip-path cards â”€â”€ */
+      .principles-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1px;
+        background: var(--line);
+        border: 1px solid var(--line);
+      }
+      .principle {
+        background: var(--bg);
+        padding: clamp(32px, 4vw, 56px);
+        position: relative;
+        overflow: hidden;
+        transition: background var(--t-med) var(--ease);
+      }
+      .principle::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: var(--accent);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform var(--t-med) var(--ease);
+      }
+      .principle:hover { background: var(--bg-card); }
+      .principle:hover::before { transform: scaleX(1); }
+      .principle .num {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.3em;
+        color: var(--text-faint);
+        margin-bottom: 24px;
+      }
+      .principle h3 {
+        font-size: clamp(22px, 2.5vw, 32px);
+        font-weight: 600;
+        letter-spacing: -0.03em;
+        margin: 0 0 16px;
+      }
+      .principle p {
+        font-family: "DM Sans", sans-serif;
+        font-size: 14px;
+        line-height: 1.7;
+        color: var(--text-dim);
+        margin: 0;
+      }
+      .principle .icon {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 28px;
+        opacity: 0.7;
+        transition: opacity var(--t-med) var(--ease), transform var(--t-med) var(--ease);
+      }
+      .principle:hover .icon { opacity: 1; transform: scale(1.1) translateZ(0); }
+
+      /* â”€â”€ Portfolio â€” image-hover tilt cards â”€â”€ */
+      .portfolio-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 16px;
+      }
+      .hold-card {
+        background: var(--bg-card);
+        border: 1px solid var(--line);
+        padding: 28px 24px;
+        position: relative;
+        overflow: hidden;
+        transition:
+          border-color var(--t-fast) var(--ease-out),
+          transform var(--t-med) var(--ease),
+          box-shadow var(--t-med) var(--ease);
         will-change: transform;
       }
+      .hold-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-6px) translateZ(0);
+        box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+      }
+      .hold-card::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: var(--accent);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform var(--t-med) var(--ease);
+      }
+      .hold-card:hover::after { transform: scaleX(1); }
+      .hold-card .tag {
+        font-size: 9px;
+        letter-spacing: 0.2em;
+        color: var(--text-faint);
+        margin-bottom: 14px;
+        transition: color var(--t-fast) var(--ease-out);
+      }
+      .hold-card:hover .tag { color: var(--accent); }
+      .hold-card h4 {
+        font-size: 16px;
+        font-weight: 700;
+        margin: 0 0 6px;
+        letter-spacing: -0.02em;
+      }
+      .hold-card p {
+        font-family: "DM Sans", sans-serif;
+        font-size: 12px;
+        color: var(--text-faint);
+        margin: 0;
+      }
+
+      /* â”€â”€ Stats â€” count-up band â”€â”€ */
+      .stats-band {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1px;
+        background: var(--line);
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+      }
+      .stat-cell {
+        background: var(--bg);
+        padding: clamp(36px, 5vw, 64px) clamp(20px, 3vw, 40px);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .stat-cell::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle at center, rgba(200,232,216,0.06), transparent 70%);
+        opacity: 0;
+        transition: opacity var(--t-med) var(--ease);
+      }
+      .stat-cell:hover::before { opacity: 1; }
+      .stat-cell .num {
+        font-size: clamp(32px, 5vw, 56px);
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        line-height: 1;
+        margin-bottom: 14px;
+        color: var(--text);
+      }
+      .stat-cell .num .suffix { color: var(--accent); font-size: 0.7em; }
+      .stat-cell label {
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        color: var(--text-faint);
+      }
+
+      /* â”€â”€ Timeline â”€â”€ */
+      .timeline {
+        position: relative;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .timeline::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 1px;
+        background: var(--line-strong);
+      }
+      .tl-item {
+        position: relative;
+        padding-left: 40px;
+        padding-bottom: 48px;
+      }
+      .tl-item::before {
+        content: "";
+        position: absolute;
+        left: -5px;
+        top: 4px;
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: var(--bg);
+        border: 1.5px solid var(--text-faint);
+        transition:
+          border-color var(--t-fast) var(--ease-out),
+          box-shadow var(--t-med) var(--ease),
+          transform var(--t-med) var(--ease);
+        will-change: transform;
+      }
+      .tl-item:hover::before {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 5px rgba(200,232,216,0.1);
+        transform: scale(1.2) translateZ(0);
+      }
+      .tl-year {
+        font-size: clamp(28px, 4vw, 44px);
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        line-height: 1;
+        margin-bottom: 10px;
+      }
+      .tl-item p {
+        font-family: "DM Sans", sans-serif;
+        font-size: 14px;
+        line-height: 1.7;
+        color: var(--text-dim);
+        margin: 0;
+        max-width: 480px;
+      }
+
+      /* â”€â”€ Quote â”€â”€ */
+      .quote-section {
+        text-align: center;
+        padding: clamp(80px, 14vw, 160px) clamp(22px, 6vw, 100px);
+      }
+      .quote-section .section-label { justify-content: center; }
+      .quote-section .section-label::after {
+        content: "";
+        width: 0;
+        height: 1px;
+        background: var(--accent);
+        transition: width var(--t-med) var(--ease) 0.2s;
+      }
+      .quote-section .section-label.in::after { width: 36px; }
+      blockquote {
+        margin: 0 auto;
+        max-width: 820px;
+        font-size: clamp(24px, 4vw, 42px);
+        line-height: 1.35;
+        font-weight: 500;
+        letter-spacing: -0.03em;
+        color: var(--text);
+      }
+      blockquote .mark {
+        color: var(--text-faint);
+        font-size: 1.5em;
+        line-height: 0;
+        vertical-align: -0.15em;
+      }
+      .quote-author {
+        margin-top: 32px;
+        font-size: 11px;
+        letter-spacing: 0.2em;
+        color: var(--text-dim);
+      }
+      .quote-author strong { color: var(--text); font-weight: 700; }
+
+      /* -- Official site section -- */
+      .official-section { background: var(--bg); }
+      .official-hero { position:relative;overflow:hidden;background:#0a0b0f;border:1px solid var(--line); }
+      .official-hero-inner { padding:clamp(44px,6vw,80px) clamp(22px,6vw,100px);display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center; }
+      @media(max-width:700px){.official-hero-inner{grid-template-columns:1fr;}}
+      .official-hero-badge { font-size:9px;letter-spacing:0.28em;color:var(--text-faint);border:1px solid var(--line-strong);display:inline-flex;align-items:center;gap:8px;padding:6px 12px;margin-bottom:22px; }
+      .official-hero-badge::before { content:"";width:5px;height:5px;border-radius:50%;background:var(--accent);animation:blink 2s step-start infinite; }
+      @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
+      .official-hero h2{margin-bottom:14px;}
+      .official-hero-text{font-family:"DM Sans",sans-serif;font-size:14px;line-height:1.7;color:var(--text-dim);margin:0 0 26px;max-width:440px;}
+      .official-links { display:flex;flex-direction:column;gap:1px;background:var(--line); }
+      .official-link-row { background:var(--bg-card);padding:18px 22px;display:flex;align-items:center;justify-content:space-between;text-decoration:none;color:var(--text);transition:background var(--t-fast) var(--ease-out),padding-left var(--t-fast) var(--ease-out);gap:14px; }
+      .official-link-row:hover{background:#14171e;padding-left:30px;}
+      .row-left{display:flex;flex-direction:column;gap:4px;}
+      .row-tag{font-size:8px;letter-spacing:0.22em;color:var(--text-faint);font-weight:700;}
+      .row-title{font-size:14px;font-weight:600;letter-spacing:-0.01em;}
+      .row-year{font-size:11px;color:var(--text-faint);font-family:"DM Sans",sans-serif;}
+      .row-arrow{font-size:14px;color:var(--text-faint);transition:color var(--t-fast),transform var(--t-fast) var(--ease-out);flex-shrink:0;}
+      .official-link-row:hover .row-arrow{color:var(--accent);transform:translate(3px,-3px);}
+      .subs-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:44px;}
+      @media(max-width:900px){.subs-grid{grid-template-columns:repeat(3,1fr);}}
+      @media(max-width:500px){.subs-grid{grid-template-columns:repeat(2,1fr);}}
+      .sub-cell{background:var(--bg);padding:24px 18px;transition:background var(--t-fast) var(--ease-out);cursor:default;position:relative;overflow:hidden;}
+      .sub-cell::after{content:"";position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--accent);transition:width var(--t-med) var(--ease);}
+      .sub-cell:hover{background:var(--bg-card);}
+      .sub-cell:hover::after{width:100%;}
+      .sub-name{font-size:13px;font-weight:700;margin-bottom:5px;letter-spacing:-0.01em;}
+      .sub-sector{font-size:9px;letter-spacing:0.18em;color:var(--text-faint);}
+
+      /* â”€â”€ Footer â”€â”€ */
+      .footer {
+        padding: clamp(50px, 8vw, 90px) clamp(22px, 6vw, 100px) 30px;
+        border-top: 1px solid var(--line);
+      }
+      .footer-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        gap: 40px;
+        flex-wrap: wrap;
+        margin-bottom: 50px;
+      }
+      .footer-brand {
+        font-size: clamp(18px, 2vw, 26px);
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        line-height: 1.1;
+      }
+      .footer-brand span {
+        display: block;
+        font-weight: 500;
+        letter-spacing: 0.24em;
+        font-size: 9px;
+        margin-top: 8px;
+        color: var(--text-faint);
+      }
+      .footer-links {
+        display: flex;
+        gap: 50px;
+        flex-wrap: wrap;
+      }
+      .footer-col h5 {
+        font-size: 9px;
+        letter-spacing: 0.2em;
+        color: var(--text-faint);
+        margin: 0 0 18px;
+        font-weight: 700;
+      }
+      .footer-col a {
+        display: block;
+        font-size: 13px;
+        color: var(--text-dim);
+        text-decoration: none;
+        margin-bottom: 10px;
+        font-family: "DM Sans", sans-serif;
+        transition: color var(--t-fast) var(--ease-out), transform var(--t-fast) var(--ease-out);
+      }
+      .footer-col a:hover { color: var(--text); transform: translateX(4px) translateZ(0); }
+      .footer-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        border-top: 1px solid var(--line);
+        padding-top: 24px;
+      }
+      .footer-bottom small {
+        font-size: 9px;
+        letter-spacing: 0.18em;
+        color: var(--text-faint);
+      }
+
+      /* â”€â”€ Hero progress bar â”€â”€ */
       .progress {
         position: absolute;
         z-index: 6;
@@ -272,247 +903,572 @@
         bottom: 0;
         height: 2px;
         width: 100%;
-        background: #d9e7e6;
+        background: var(--accent);
         transform: scaleX(0);
         transform-origin: left;
         will-change: transform;
       }
-      .frame {
+
+      /* â”€â”€ Image transition section (gallery) â”€â”€ */
+      .gallery {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2px;
+        margin-top: 56px;
+        height: 520px;
+      }
+      .gal-item {
+        position: relative;
+        overflow: hidden;
+        cursor: pointer;
+      }
+      .gal-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transform: scale(1.05) translateZ(0);
+        transition: transform var(--t-slow) var(--ease), filter var(--t-med) var(--ease);
+        filter: grayscale(0.6) brightness(0.7);
+        will-change: transform, filter;
+      }
+      .gal-item:hover img {
+        transform: scale(1.15) translateZ(0);
+        filter: grayscale(0) brightness(1);
+      }
+      .gal-item::after {
+        content: attr(data-label);
         position: absolute;
-        inset: 14px;
-        z-index: 2;
-        border: 1px solid rgba(255, 255, 255, 0.13);
-        pointer-events: none;
+        bottom: 20px;
+        left: 20px;
+        font-size: 10px;
+        letter-spacing: 0.2em;
+        color: var(--text);
+        opacity: 0;
+        transform: translateY(10px);
+        transition: opacity var(--t-med) var(--ease), transform var(--t-med) var(--ease);
       }
-      @keyframes rise {
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
+      .gal-item:hover::after { opacity: 1; transform: translateY(0); }
+      .gal-item::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(0deg, rgba(0,0,0,0.6), transparent 50%);
+        opacity: 0;
+        transition: opacity var(--t-med) var(--ease);
+        z-index: 1;
       }
+      .gal-item:hover::before { opacity: 1; }
+
+      /* â”€â”€ Responsive â”€â”€ */
+      @media (max-width: 900px) {
+        .nav-links { display: none; }
+        .principles-grid { grid-template-columns: 1fr; }
+        .portfolio-grid { grid-template-columns: repeat(2, 1fr); }
+        .stats-band { grid-template-columns: repeat(2, 1fr); }
+        .gallery { grid-template-columns: 1fr 1fr; height: 400px; }
+        .footer-top { flex-direction: column; }
+      }
+
       @media (max-width: 650px) {
-        .shell {
-          padding: 26px 25px 26px;
-        }
-        .frame {
-          inset: 9px;
-        }
-        .nav-right {
-          gap: 7px;
-          font-size: 8px;
-          letter-spacing: 0.1em;
-          white-space: nowrap;
-        }
-        .main {
-          padding: 80px 0 48px;
-        }
-        h1 {
-          font-size: clamp(46px, 13vw, 68px);
-          margin: 25px 0;
-        }
+        .shell { padding: 100px 25px 26px; }
+        .hero .frame { inset: 9px; }
+        .nav-right { gap: 7px; font-size: 8px; letter-spacing: 0.1em; }
+        h1 { font-size: clamp(44px, 12vw, 64px); margin: 22px 0; }
         .hero:before {
           background:
-            linear-gradient(90deg, rgba(1, 3, 7, 0.76), rgba(1, 3, 7, 0.25)),
-            linear-gradient(
-              0deg,
-              rgba(0, 0, 0, 0.88),
-              transparent 65%,
-              rgba(0, 0, 0, 0.35)
-            );
+            linear-gradient(90deg, rgba(1,3,7,0.8), rgba(1,3,7,0.25)),
+            linear-gradient(0deg, var(--bg) 4%, transparent 60%, rgba(0,0,0,0.35));
         }
-        .shot {
-          background-position: 55% center;
-        }
-        .footer {
-          align-items: start;
-          flex-direction: column;
-          gap: 25px;
-        }
-        .stats {
-          width: 100%;
-          justify-content: space-between;
-          gap: 10px;
-        }
-        .stat label {
-          font-size: 8px;
-        }
-        .intro {
-          max-width: 310px;
-        }
-        .actions {
-          gap: 17px;
-          flex-wrap: wrap;
-        }
+        .shot { background-position: 55% center; }
+        .portfolio-grid { grid-template-columns: 1fr; }
+        .stats-band { grid-template-columns: 1fr 1fr; }
+        .gallery { grid-template-columns: 1fr; height: 300px; }
+        .actions { gap: 17px; flex-wrap: wrap; }
+        .intro { max-width: 310px; }
+        .footer-links { gap: 30px; }
+        .footer-bottom { flex-direction: column; align-items: start; }
       }
+
       @media (prefers-reduced-motion: reduce) {
-        .hero:not(.motion-enabled) .shot {
-          opacity: 0;
-          transform: none;
-          transition: none;
+        .page-loader { display: none; }
+        .shot { transform: none !important; }
+        .shot.is-active { opacity: 1; }
+        .reveal, .reveal-clip { opacity: 1; transform: none; clip-path: none; transition: none; }
+        .hero .eyebrow,
+        h1 .line span,
+        .intro,
+        .actions,
+        .scroll-cue {
+          animation: none !important; opacity: 1; transform: none;
         }
-        .hero:not(.motion-enabled) .shot.three {
-          opacity: 1;
-        }
-        .hero:not(.motion-enabled) .wipe,
-        .hero:not(.motion-enabled) .progress {
-          display: none;
-        }
-        .hero:not(.motion-enabled) .eyebrow,
-        .hero:not(.motion-enabled) h1 span,
-        .hero:not(.motion-enabled) .intro,
-        .hero:not(.motion-enabled) .actions {
-          animation: none;
-          opacity: 1;
-          transform: none;
-        }
+        .scroll-cue::after { animation: none; }
+        html { scroll-behavior: auto; }
+        * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
       }
     </style>
   </head>
   <body>
-    <main class="hero">
-      <div class="shot one is-active"></div>
-      <div class="shot two"></div>
-      <div class="shot three"></div>
-      <div class="grain"></div>
-      <div class="frame"></div>
-      <div class="wipe"></div>
-      <div class="progress"></div>
+    <!-- â”€â”€ Page loader â”€â”€ -->
+    <div class="page-loader" id="pageLoader">
+      <div class="loader-ring"></div>
+    </div>
+
+    <!-- â”€â”€ Navbar â”€â”€ -->
+    <nav class="navbar" id="navbar">
+      <a class="brand" href="#hero">BERKSHIRE<br />HATHAWAY<span>EST. 1839</span></a>
+      <ul class="nav-links">
+        <li><a href="#principles">Principles</a></li>
+        <li><a href="#portfolio">Portfolio</a></li>
+        <li><a href="#timeline">Heritage</a></li>
+        <li><a href="#quote">Philosophy</a></li>
+        <li><a href="#official">Official</a></li>
+      </ul>
+      <!-- dot + scene label (replicates the video's "â€¢ A LONG-TERM PERSPECTIVE") -->
+      <div class="nav-scene-label" aria-live="polite">
+        <span class="dot"></span>
+        <div class="nav-scene-text" id="navSceneText">
+          <span class="in">A LONG-TERM PERSPECTIVE</span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- â”€â”€ Hero â”€â”€ -->
+    <main class="hero" id="hero">
+      <!-- Slide-wipe track: shots slide horizontally -->
+      <div class="shots-track" id="shotsTrack">
+        <div class="shot one is-active"><div class="shot-inner"></div></div>
+        <div class="shot two"><div class="shot-inner"></div></div>
+        <div class="shot three"><div class="shot-inner"></div></div>
+      </div>
+      <div class="progress" id="heroProgress"></div>
+
       <div class="shell">
-        <header class="nav">
-          <div class="brand">BERKSHIRE<br />HATHAWAY<span>EST. 1839</span></div>
-          <button
-            class="nav-right"
-            type="button"
-            aria-pressed="true"
-            aria-label="Pause background motion"
-          >
-            <span class="dot"></span
-            ><span class="motion-label">PAUSE MOTION</span>
-          </button>
-        </header>
         <section class="main">
           <div class="eyebrow">BUILT ON CONVICTION</div>
-          <h1><span>Value.</span><span>Beyond time.</span></h1>
+          <h1>
+            <span class="line"><span>Value.</span></span>
+            <span class="line"><span>Beyond time.</span></span>
+          </h1>
           <p class="intro">
             A legacy of disciplined investing, enduring businesses, and
             decisions made for the long term.
           </p>
           <div class="actions">
-            <a
-              class="cta"
-              href="https://www.berkshirehathaway.com/"
-              target="_blank"
-              rel="noopener"
-              >EXPLORE BERKSHIRE ↗</a
-            ><a
-              class="secondary"
-              href="https://www.berkshirehathaway.com/reports.html"
-              target="_blank"
-              rel="noopener"
-              >ANNUAL REPORTS</a
-            >
+            <a class="cta" href="#principles" data-magnetic>EXPLORE BERKSHIRE â†—</a>
+            <a class="cta-alt" href="#timeline">ANNUAL REPORTS</a>
+          </div>
+          <!-- Slide dots (2 squares like in the video) -->
+          <div class="slide-dots" id="slideDots" aria-label="Slide navigation">
+            <button class="slide-dot active" aria-label="Slide 1"></button>
+            <button class="slide-dot" aria-label="Slide 2"></button>
+            <button class="slide-dot" aria-label="Slide 3"></button>
           </div>
         </section>
-        <footer class="footer">
-          <small>INDEPENDENT DESIGN CONCEPT · NOT AN OFFICIAL WEBSITE</small>
-          <div class="stats">
-            <div class="stat"><strong>01</strong><label>DISCIPLINE</label></div>
-            <div class="stat">
-              <strong>02</strong><label>STEWARDSHIP</label>
-            </div>
-            <div class="stat"><strong>03</strong><label>LONGEVITY</label></div>
-          </div>
-        </footer>
       </div>
+
+      <div class="scroll-cue">SCROLL</div>
     </main>
-    <script>
+
+    <!-- â”€â”€ Principles â”€â”€ -->
+    <section class="section" id="principles">
+      <div class="section-label reveal">CORE PRINCIPLES</div>
+      <h2 class="reveal">Discipline is not a tactic.<br><span class="alt">It is the architecture.</span></h2>
+      <p class="body-text reveal" style="margin-bottom: 64px;">
+        Three pillars have guided every decision for over a century â€” through
+        every market, every cycle, every era.
+      </p>
+      <div class="principles-grid reveal">
+        <div class="principle">
+          <div class="num">01</div>
+          <svg class="icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M24 4 L40 14 L40 34 L24 44 L8 34 L8 14 Z" />
+            <path d="M24 4 L24 44 M8 14 L40 34 M40 14 L8 34" opacity="0.4" />
+          </svg>
+          <h3>Discipline</h3>
+          <p>Refuse what is merely available. Wait for what is inevitable. The margin of safety is not a number â€” it is a way of seeing.</p>
+        </div>
+        <div class="principle">
+          <div class="num">02</div>
+          <svg class="icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="24" cy="24" r="20" />
+            <path d="M24 4 C14 14 14 34 24 44 C34 34 34 14 24 4 Z" opacity="0.4" />
+            <path d="M4 24 H44" opacity="0.4" />
+          </svg>
+          <h3>Stewardship</h3>
+          <p>Own businesses, not tickers. Treat every holding as a trust passed forward â€” to the next manager, the next generation, the next century.</p>
+        </div>
+        <div class="principle">
+          <div class="num">03</div>
+          <svg class="icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="24" cy="24" r="20" />
+            <path d="M24 8 L24 24 L36 30" />
+          </svg>
+          <h3>Longevity</h3>
+          <p>Compound patiently. The most powerful force in finance is not leverage or timing â€” it is the willingness to stay.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- â”€â”€ Portfolio â”€â”€ -->
+    <section class="section dark" id="portfolio">
+      <div class="section-label reveal">ENDURING HOLDINGS</div>
+      <h2 class="reveal">A portfolio built to <span class="alt">outlast trends.</span></h2>
+      <p class="body-text reveal" style="margin-bottom: 56px;">
+        Companies chosen not for the quarter, but for the decades behind them
+        and the decades ahead.
+      </p>
+      <div class="portfolio-grid reveal">
+        <div class="hold-card"><div class="tag">INSURANCE</div><h4>GEICO</h4><p>Direct-to-consumer auto insurance</p></div>
+        <div class="hold-card"><div class="tag">RAIL</div><h4>BNSF Railway</h4><p>One of the largest freight networks</p></div>
+        <div class="hold-card"><div class="tag">ENERGY</div><h4>Berkshire Energy</h4><p>Utilities serving millions of homes</p></div>
+        <div class="hold-card"><div class="tag">CONSUMER</div><h4>See's Candies</h4><p>A century of brand loyalty</p></div>
+        <div class="hold-card"><div class="tag">TECH</div><h4>Apple</h4><p>Stake held through conviction</p></div>
+        <div class="hold-card"><div class="tag">FOOD</div><h4>Dairy Queen</h4><p>6,800 locations worldwide</p></div>
+        <div class="hold-card"><div class="tag">INDUSTRIAL</div><h4>Marmon Group</h4><p>Diversified manufacturing</p></div>
+        <div class="hold-card"><div class="tag">RETAIL</div><h4>Nebraska Furniture Mart</h4><p>Founded on honest pricing</p></div>
+      </div>
+
+      <!-- Image gallery with pro transitions -->
+      <div class="gallery reveal">
+        <div class="gal-item" data-label="OMAHA HQ"><img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80" alt="Office" loading="lazy" /></div>
+        <div class="gal-item" data-label="KEystone"><img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80" alt="Building" loading="lazy" /></div>
+        <div class="gal-item" data-label="BNSF RAIL"><img src="https://images.unsplash.com/photo-1474487548417-78148714a604?auto=format&fit=crop&w=800&q=80" alt="Rail" loading="lazy" /></div>
+      </div>
+    </section>
+
+    <!-- â”€â”€ Stats â”€â”€ -->
+    <section class="stats-band reveal">
+      <div class="stat-cell"><div class="num" data-count="1.1" data-suffix="T" data-prefix="$">$0<span class="suffix">T</span></div><label>TOTAL ASSETS</label></div>
+      <div class="stat-cell"><div class="num" data-count="60" data-suffix="+">0<span class="suffix">+</span></div><label>SUBSIDIARY COMPANIES</label></div>
+      <div class="stat-cell"><div class="num" data-count="390" data-suffix="K">0<span class="suffix">K</span></div><label>EMPLOYEES</label></div>
+      <div class="stat-cell"><div class="num" data-count="1965" data-suffix="">0</div><label>BUFFETT ERA BEGINS</label></div>
+    </section>
+
+    <!-- â”€â”€ Timeline â”€â”€ -->
+    <section class="section" id="timeline">
+      <div class="section-label reveal">A CENTURY OF CONVICTION</div>
+      <h2 class="reveal">Heritage is not history.<br><span class="alt">It is infrastructure.</span></h2>
+      <div class="timeline" style="margin-top: 56px;">
+        <div class="tl-item reveal"><div class="tl-year">1839</div><p>The Valley Falls Company is founded in Rhode Island â€” the earliest thread in the Berkshire tapestry.</p></div>
+        <div class="tl-item reveal"><div class="tl-year">1955</div><p>Berkshire Fine Spinning Associates merges with Hathaway Manufacturing â€” the combined entity struggles for years.</p></div>
+        <div class="tl-item reveal"><div class="tl-year">1965</div><p>Warren Buffett takes control of Berkshire Hathaway and begins transforming a failing textile mill into a holding empire.</p></div>
+        <div class="tl-item reveal"><div class="tl-year">1985</div><p>The last textile mill closes. The pivot from manufacturing to investing is complete â€” the old name carries a new mission.</p></div>
+        <div class="tl-item reveal"><div class="tl-year">2008</div><p>Amid global crisis, Berkshire invests $5 billion in Goldman Sachs preferred stock â€” conviction when others flee.</p></div>
+        <div class="tl-item reveal"><div class="tl-year">2024</div><p>Berkshire's market capitalization surpasses $1 trillion â€” a century of patience, discipline, and compounding made visible.</p></div>
+      </div>
+    </section>
+
+    <!-- â”€â”€ Quote â”€â”€ -->
+    <section class="section dark quote-section" id="quote">
+      <div class="section-label reveal">PHILOSOPHY</div>
+      <blockquote class="reveal">
+        <span class="mark">"</span>Our favorite holding period is<span class="alt"> forever</span>.<span class="mark">"</span>
+      </blockquote>
+      <div class="quote-author reveal">
+        <strong>WARREN E. BUFFETT</strong> Â· CHAIRMAN &amp; CEO
+      </div>
+    </section>
+
+    <!-- â”€â”€ Footer â”€â”€ -->
+
+    <!-- Official site simulation -->
+    <section class="section official-section" id="official">
+      <div class="section-label reveal">BERKSHIRE HATHAWAY OFFICIAL</div>
+      <div class="official-hero reveal">
+        <div class="official-hero-inner">
+          <div>
+            <div class="official-hero-badge">OFFICIAL RESOURCES</div>
+            <h2>The real<br><span class="alt">Berkshire.</span></h2>
+            <p class="official-hero-text">Everything published directly by the company - annual reports, shareholder letters, proxy statements, and filings going back decades.</p>
+          </div>
+          <div class="official-links">
+            <a class="official-link-row" href="https://www.berkshirehathaway.com/reports.html" target="_blank" rel="noopener">
+              <div class="row-left"><span class="row-tag">ANNUAL REPORT</span><span class="row-title">2023 Annual Report</span><span class="row-year">Form 10-K - Feb 2024</span></div>
+              <span class="row-arrow">+</span>
+            </a>
+            <a class="official-link-row" href="https://www.berkshirehathaway.com/letters/letters.html" target="_blank" rel="noopener">
+              <div class="row-left"><span class="row-tag">SHAREHOLDER LETTERS</span><span class="row-title">Letters 1977 - 2023</span><span class="row-year">Warren Buffett - Annual</span></div>
+              <span class="row-arrow">+</span>
+            </a>
+            <a class="official-link-row" href="https://www.berkshirehathaway.com/ownersman.pdf" target="_blank" rel="noopener">
+              <div class="row-left"><span class="row-tag">GOVERNANCE</span><span class="row-title">Owner's Manual</span><span class="row-year">Principles for Shareholders</span></div>
+              <span class="row-arrow">+</span>
+            </a>
+            <a class="official-link-row" href="https://www.berkshirehathaway.com/subs/sublinks.html" target="_blank" rel="noopener">
+              <div class="row-left"><span class="row-tag">SUBSIDIARIES</span><span class="row-title">All subsidiary companies</span><span class="row-year">Full directory</span></div>
+              <span class="row-arrow">+</span>
+            </a>
+            <a class="official-link-row" href="https://www.berkshirehathaway.com/" target="_blank" rel="noopener">
+              <div class="row-left"><span class="row-tag">WEBSITE</span><span class="row-title">berkshirehathaway.com</span><span class="row-year">Official corporate site</span></div>
+              <span class="row-arrow">+</span>
+            </a>
+          </div>
+        </div>
+      </div>
+      <p class="body-text reveal" style="margin-top:52px;margin-bottom:26px;">A selection of the operating businesses wholly or partially owned by Berkshire Hathaway Inc.</p>
+      <div class="subs-grid reveal">
+        <div class="sub-cell"><div class="sub-name">GEICO</div><div class="sub-sector">INSURANCE</div></div>
+        <div class="sub-cell"><div class="sub-name">BNSF Railway</div><div class="sub-sector">TRANSPORTATION</div></div>
+        <div class="sub-cell"><div class="sub-name">BH Energy</div><div class="sub-sector">UTILITIES</div></div>
+        <div class="sub-cell"><div class="sub-name">General Re</div><div class="sub-sector">REINSURANCE</div></div>
+        <div class="sub-cell"><div class="sub-name">BH Reinsurance</div><div class="sub-sector">REINSURANCE</div></div>
+        <div class="sub-cell"><div class="sub-name">See's Candies</div><div class="sub-sector">CONSUMER</div></div>
+        <div class="sub-cell"><div class="sub-name">Dairy Queen</div><div class="sub-sector">FOOD SERVICE</div></div>
+        <div class="sub-cell"><div class="sub-name">Nebraska Furniture</div><div class="sub-sector">RETAIL</div></div>
+        <div class="sub-cell"><div class="sub-name">Marmon Group</div><div class="sub-sector">INDUSTRIAL</div></div>
+        <div class="sub-cell"><div class="sub-name">McLane Company</div><div class="sub-sector">DISTRIBUTION</div></div>
+        <div class="sub-cell"><div class="sub-name">Precision Castparts</div><div class="sub-sector">AEROSPACE</div></div>
+        <div class="sub-cell"><div class="sub-name">Lubrizol</div><div class="sub-sector">SPECIALTY CHEM.</div></div>
+        <div class="sub-cell"><div class="sub-name">Shaw Industries</div><div class="sub-sector">FLOORING</div></div>
+        <div class="sub-cell"><div class="sub-name">Clayton Homes</div><div class="sub-sector">HOUSING</div></div>
+        <div class="sub-cell"><div class="sub-name">Brooks Running</div><div class="sub-sector">FOOTWEAR</div></div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer-top">
+        <div class="footer-brand">BERKSHIRE<br />HATHAWAY<span>EST. 1839</span></div>
+        <div class="footer-links">
+          <div class="footer-col">
+            <h5>COMPANY</h5>
+            <a href="https://www.berkshirehathaway.com/" target="_blank" rel="noopener">Homepage</a>
+            <a href="https://www.berkshirehathaway.com/reports.html" target="_blank" rel="noopener">Annual Reports</a>
+            <a href="https://www.berkshirehathaway.com/letters/letters.html" target="_blank" rel="noopener">Letters to Shareholders</a>
+          </div>
+          <div class="footer-col">
+            <h5>SECTIONS</h5>
+            <a href="#principles">Principles</a>
+            <a href="#portfolio">Portfolio</a>
+            <a href="#timeline">Heritage</a>
+            <a href="#quote">Philosophy</a>
+          </div>
+          <div class="footer-col">
+            <h5>NYSE</h5>
+            <a href="#">BRK.A</a>
+            <a href="#">BRK.B</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <small>INDEPENDENT DESIGN CONCEPT Â· NOT AN OFFICIAL WEBSITE</small>
+        <small>Â© 2026 NOIR CONCEPT</small>
+      </div>
+    </footer>
+
       (() => {
-        const hero = document.querySelector(".hero");
-        const shots = [...document.querySelectorAll(".shot")];
-        const wipe = document.querySelector(".wipe");
-        const progress = document.querySelector(".progress");
-        const toggle = document.querySelector(".nav-right");
-        const label = document.querySelector(".motion-label");
-        const reduce = matchMedia("(prefers-reduced-motion: reduce)");
-        const forceMotion = new URLSearchParams(location.search).has("motion");
-        const sceneDuration = 3200;
+        /* ═══════════════════════════════════════════════════
+           120fps ENGINE — all animation via transform/opacity
+           ═══════════════════════════════════════════════════ */
+
+        const SCENE_DURATION = 3800;
+        const WIPE_DURATION  = 680;
+        const EASE_WIPE = "cubic-bezier(0.76, 0, 0.24, 1)";
+
+        const SCENE_LABELS = [
+          "A LONG-TERM PERSPECTIVE",
+          "ENDURING BUSINESSES",
+          "BUILT ON CONVICTION",
+        ];
+
+        /* Page loader */
+        const loader = document.getElementById("pageLoader");
+        if (loader) {
+          window.addEventListener("load", () => setTimeout(() => loader.classList.add("gone"), 300));
+          setTimeout(() => loader.classList.add("gone"), 2000);
+        }
+
+        const shots    = [...document.querySelectorAll(".shot")];
+        const progress = document.getElementById("heroProgress");
+        const dotsEl   = [...document.querySelectorAll(".slide-dot")];
+        const navText  = document.getElementById("navSceneText");
+
         let active = 0;
         let timer;
-        let motionEnabled = forceMotion || !reduce.matches;
-        let wipeAnimation;
-        let progressAnimation;
-        const animateAccents = () => {
-          wipeAnimation?.cancel();
-          progressAnimation?.cancel();
-          wipeAnimation = wipe.animate(
-            [
-              { transform: "translateX(-101%)" },
-              { transform: "translateX(101%)" },
-            ],
-            { duration: 200, easing: "cubic-bezier(.16,1,.3,1)" },
-          );
-          progressAnimation = progress.animate(
-            [{ transform: "scaleX(1)" }, { transform: "scaleX(0)" }],
-            { duration: sceneDuration, easing: "linear" },
+        let progressAnim;
+        let isAnimating = false;
+        const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+
+        const positionShots = (activeIdx) => {
+          shots.forEach((s, i) => {
+            s.style.transition = "none";
+            if (i === activeIdx) {
+              s.style.transform = "translateX(0) translateZ(0)";
+              s.classList.add("is-active");
+            } else {
+              s.style.transform = "translateX(100%) translateZ(0)";
+              s.classList.remove("is-active");
+            }
+          });
+        };
+
+        const setNavLabel = (label) => {
+          if (!navText) return;
+          const current = navText.querySelector(".in");
+          if (!current) return;
+          const next = document.createElement("span");
+          next.className = "next";
+          next.textContent = label;
+          navText.appendChild(next);
+          next.getBoundingClientRect();
+          current.classList.replace("in", "out");
+          next.classList.replace("next", "in");
+          setTimeout(() => current.remove(), 500);
+        };
+
+        const updateDots = (idx) => {
+          dotsEl.forEach((d, i) => d.classList.toggle("active", i === idx));
+        };
+
+        const slideTo = (nextIdx) => {
+          if (isAnimating || nextIdx === active) return;
+          isAnimating = true;
+          const outShot = shots[active];
+          const inShot  = shots[nextIdx];
+          inShot.style.transition = "none";
+          inShot.style.transform  = "translateX(100%) translateZ(0)";
+          inShot.getBoundingClientRect();
+          outShot.style.transition = `transform ${WIPE_DURATION}ms ${EASE_WIPE}`;
+          inShot.style.transition  = `transform ${WIPE_DURATION}ms ${EASE_WIPE}`;
+          outShot.style.transform = "translateX(-100%) translateZ(0)";
+          inShot.style.transform  = "translateX(0) translateZ(0)";
+          inShot.classList.add("is-active");
+          outShot.classList.remove("is-active");
+          active = nextIdx;
+          updateDots(active);
+          setNavLabel(SCENE_LABELS[active]);
+          setTimeout(() => {
+            outShot.style.transition = "none";
+            outShot.style.transform  = "translateX(100%) translateZ(0)";
+            isAnimating = false;
+          }, WIPE_DURATION);
+        };
+
+        const startProgress = () => {
+          if (!progress) return;
+          progressAnim?.cancel();
+          progressAnim = progress.animate(
+            [{ transform: "scaleX(0)", transformOrigin: "left" },
+             { transform: "scaleX(1)", transformOrigin: "left" }],
+            { duration: SCENE_DURATION, easing: "linear", fill: "forwards" }
           );
         };
-        const show = (index, animate = true) => {
-          active = index;
-          shots.forEach((shot, i) =>
-            shot.classList.toggle("is-active", i === active),
-          );
-          if (animate) animateAccents();
-        };
+
         const schedule = () => {
           clearTimeout(timer);
-          if (!motionEnabled || document.hidden) return;
+          if (document.hidden || reduce.matches) return;
           timer = setTimeout(() => {
-            show((active + 1) % shots.length);
+            slideTo((active + 1) % shots.length);
+            startProgress();
             schedule();
-          }, sceneDuration);
+          }, SCENE_DURATION);
         };
-        const renderControl = () => {
-          hero.classList.toggle("motion-enabled", motionEnabled);
-          toggle.setAttribute("aria-pressed", String(motionEnabled));
-          toggle.setAttribute(
-            "aria-label",
-            motionEnabled
-              ? "Pause background motion"
-              : "Play background motion",
-          );
-          label.textContent = motionEnabled ? "PAUSE MOTION" : "PLAY MOTION";
-        };
-        const setMotion = (enabled) => {
-          motionEnabled = enabled;
-          clearTimeout(timer);
-          wipeAnimation?.cancel();
-          progressAnimation?.cancel();
-          renderControl();
-          if (motionEnabled) {
-            animateAccents();
-            schedule();
-          }
-        };
-        toggle.addEventListener("click", () => setMotion(!motionEnabled));
-        document.addEventListener("visibilitychange", () => {
-          if (document.hidden) {
+
+        dotsEl.forEach((d, i) => {
+          d.addEventListener("click", () => {
+            slideTo(i);
             clearTimeout(timer);
-            progressAnimation?.pause();
-          } else if (motionEnabled) {
-            progressAnimation?.play();
+            startProgress();
             schedule();
-          }
+          });
         });
-        reduce.addEventListener("change", (event) => {
-          if (!forceMotion) setMotion(!event.matches);
+
+        document.addEventListener("visibilitychange", () => {
+          if (document.hidden) { clearTimeout(timer); progressAnim?.pause(); }
+          else { progressAnim?.play(); schedule(); }
         });
-        renderControl();
-        if (motionEnabled) {
-          animateAccents();
-          schedule();
-        } else {
-          show(2, false);
-        }
+
+        reduce.addEventListener("change", () => {
+          if (reduce.matches) clearTimeout(timer); else schedule();
+        });
+
+        positionShots(0);
+        updateDots(0);
+        if (!reduce.matches) { startProgress(); schedule(); }
+
+        /* Navbar scroll */
+        const navbar = document.getElementById("navbar");
+        const scrollBar = document.getElementById("scrollProgress");
+        let ticking = false;
+        window.addEventListener("scroll", () => {
+          if (ticking) return;
+          ticking = true;
+          requestAnimationFrame(() => {
+            const sy = window.scrollY;
+            if (navbar) navbar.classList.toggle("scrolled", sy > 40);
+            if (scrollBar) {
+              const docH = document.documentElement.scrollHeight - window.innerHeight;
+              scrollBar.style.transform = `scaleX(${docH > 0 ? sy / docH : 0})`;
+            }
+            ticking = false;
+          });
+        }, { passive: true });
+
+        /* Scroll reveal */
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+        }, { threshold: 0.12, rootMargin: "0px 0px -60px 0px" });
+        document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+
+        /* Active nav */
+        const navLinks = document.querySelectorAll(".nav-links a");
+        const navIO = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const id = entry.target.id;
+              navLinks.forEach((a) => a.classList.toggle("active", a.getAttribute("href") === "#" + id));
+            }
+          });
+        }, { threshold: 0.5 });
+        document.querySelectorAll("section[id], main[id]").forEach((s) => navIO.observe(s));
+
+        /* Count-up stats */
+        const statIO = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const el     = entry.target;
+            const target = parseFloat(el.dataset.count);
+            const suffix = el.dataset.suffix || "";
+            const prefix = el.dataset.prefix || "";
+            const isFloat = target % 1 !== 0;
+            const t0 = performance.now();
+            const tick = (now) => {
+              const t = Math.min((now - t0) / 1600, 1);
+              const e = 1 - Math.pow(1 - t, 3);
+              el.innerHTML = `${prefix}${isFloat ? (target*e).toFixed(1) : Math.round(target*e)}<span class="suffix">${suffix}</span>`;
+              if (t < 1) requestAnimationFrame(tick);
+            };
+            requestAnimationFrame(tick);
+            statIO.unobserve(el);
+          });
+        }, { threshold: 0.5 });
+        document.querySelectorAll(".stat-cell .num[data-count]").forEach((el) => statIO.observe(el));
+
+        /* Parallax hero */
+        const shotsTrack = document.getElementById("shotsTrack");
+        let pTick = false;
+        window.addEventListener("scroll", () => {
+          if (pTick) return;
+          pTick = true;
+          requestAnimationFrame(() => {
+            const sy = window.scrollY;
+            if (sy < window.innerHeight && shotsTrack)
+              shotsTrack.style.transform = `translateY(${sy * 0.28}px) translateZ(0)`;
+            pTick = false;
+          });
+        }, { passive: true });
+
+        /* Magnetic buttons */
+        document.querySelectorAll("[data-magnetic]").forEach((btn) => {
+          btn.addEventListener("mousemove", (e) => {
+            const r = btn.getBoundingClientRect();
+            btn.style.transform = `translate(${(e.clientX-r.left-r.width/2)*0.25}px,${(e.clientY-r.top-r.height/2)*0.25}px) translateZ(0)`;
+          });
+          btn.addEventListener("mouseleave", () => { btn.style.transform = "translate(0,0) translateZ(0)"; });
+        });
+
+        /* Stagger */
+        document.querySelectorAll(".principle").forEach((p, i) => { p.style.transitionDelay = `${i*120}ms`; });
+        document.querySelectorAll(".hold-card").forEach((c, i) => { c.style.transitionDelay = `${i*60}ms`; });
       })();
     </script>
   </body>
